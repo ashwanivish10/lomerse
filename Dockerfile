@@ -1,5 +1,5 @@
-# Use Node.js with Puppeteer dependencies
-FROM node:20-slim
+# Use full Node.js image (includes npm properly)
+FROM node:20
 
 # Install dependencies for Puppeteer/Chromium
 RUN apt-get update && apt-get install -y \
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Puppeteer and Node environment variables
+# Set environment variables
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV NODE_ENV=production
@@ -36,7 +36,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies for build)
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -51,4 +51,4 @@ RUN npm prune --production
 EXPOSE 10000
 
 # Start the server
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/server.js"]
