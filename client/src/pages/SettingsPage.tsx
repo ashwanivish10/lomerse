@@ -1,278 +1,71 @@
-// import React, { useEffect, useState } from "react";
-// import { useAuth } from "@/hooks/useAuth";
-// import { useLocation } from "wouter";
-// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { Switch } from "@/components/ui/switch";
-// import { Label } from "@/components/ui/label";
-// import {
-//   LayoutDashboard, Users, Crown, CreditCard, Settings, BarChart3, HelpCircle, LogOut, FileText, User, Bell, Palette, Sparkles
-// } from "lucide-react";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { apiRequest } from "@/lib/queryClient";
-
-// import Dock from "@/components/Dock";
-// import type { DockItemData } from "@/components/Dock";
-// import { useAppSettings } from "@/contexts/SettingsContext";
-// import { useToast } from "@/hooks/use-toast";
-
-// const mainMenuItems = [
-//   { href: "/", label: "Dashboard", icon: <LayoutDashboard className="size-5" /> },
-//   { href: "/choose-template", label: "Create Invoice", icon: <FileText className="size-5" /> },
-//   { href: "/clients", label: "Clients", icon: <Users className="size-5" /> },
-//   { href: "/profile", label: "Profile", icon: <User className="size-5" /> },
-//   { href: "/reports", label: "Reports", icon: <BarChart3 className="size-5" /> },
-// ];
-
-// const footerMenuItems = [
-//   { href: "/settings", label: "Settings", icon: <Settings className="size-5" /> },
-//   { href: "/help", label: "Help", icon: <HelpCircle className="size-5" /> },
-// ];
-
-// export default function SettingsPage() {
-//     const { user, isLoading } = useAuth();
-//     const [, setLocation] = useLocation();
-//     const queryClient = useQueryClient();
-//     const { toast } = useToast();
-    
-//     const { aiSuggestionsEnabled, toggleAISuggestions, darkMode, toggleDarkMode } = useAppSettings();
-
-//     const [notifications, setNotifications] = useState({
-//         emailOnPaid: true,
-//         emailReminders: false,
-//     });
-
-//     // --- YEH HAI UPDATE: Settings save karne ke liye mutation ---
-//     const updateSettingsMutation = useMutation({
-//         mutationFn: (settings: { aiSuggestionsEnabled?: boolean, darkMode?: boolean }) => {
-//             // Backend API /api/settings ko call karein
-//             return apiRequest("PUT", "/api/settings", settings);
-//         },
-//         onSuccess: () => {
-//             toast({ title: "Settings Saved!"});
-//             // User data ko refresh karein taaki poore app mein update ho jaaye
-//             queryClient.invalidateQueries({ queryKey: ["authenticatedUser"] });
-//         },
-//         onError: () => {
-//             toast({ title: "Error", description: "Could not save settings.", variant: "destructive"});
-//         }
-//     });
-
-//     const handleAIToggle = () => {
-//         // Pehle UI ko turant update karein
-//         toggleAISuggestions();
-//         // Phir backend par data bhejein
-//         updateSettingsMutation.mutate({ aiSuggestionsEnabled: !aiSuggestionsEnabled });
-//     };
-
-//     const handleDarkModeToggle = () => {
-//         // Pehle UI ko turant update karein
-//         toggleDarkMode();
-//         // Phir backend par data bhejein
-//         updateSettingsMutation.mutate({ darkMode: !darkMode });
-//     };
-//     // ----------------------------------------------------
-    
-//     useEffect(() => {
-//         const root = window.document.documentElement;
-//         root.classList.toggle('dark', darkMode);
-//     }, [darkMode]);
-    
-//     useEffect(() => {
-//         if (!isLoading && !user) {
-//             setLocation('/signin');
-//         }
-//     }, [isLoading, user, setLocation]);
-
-//     const getDockItems = (isSubscribed: boolean): DockItemData[] => [
-//         ...mainMenuItems.map(item => ({...item, onClick: () => setLocation(item.href)})),
-//         ...footerMenuItems.map(item => ({...item, onClick: () => setLocation(item.href)})),
-//         isSubscribed ? {
-//             href: "/subscription", label: "Subscription", icon: <CreditCard className="size-5" />,
-//             onClick: () => setLocation("/subscription"),
-//         } : {
-//             href: "/subscription", label: "Upgrade to Pro", icon: <Crown className="size-5 text-yellow-500" />,
-//             onClick: () => setLocation("/subscription"),
-//         },
-//         {
-//             href: "/auth/logout", label: "Sign Out", icon: <LogOut className="size-5 text-red-500" />,
-//             onClick: () => { window.location.href = "/auth/logout"; },
-//         },
-//     ];
-
-//     if (isLoading || !user) {
-//         return <div className="min-h-screen flex items-center justify-center">...Loading...</div>;
-//     }
-
-//     const isSubscribed = user.subscriptionStatus === 'active';
-//     const dockItems = getDockItems(isSubscribed);
-
-//     return (
-//         <div className="min-h-screen bg-gray-50 dark:bg-[#0e0f12] text-foreground">
-//             <Dock items={dockItems} />
-
-//             <main className="container mx-auto px-6 py-8 pl-24 sm:pl-28">
-//                 <div className="mb-10">
-//                     <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-//                         Settings
-//                     </h1>
-//                     <p className="text-muted-foreground">
-//                         Manage your account, preferences, and app settings.
-//                     </p>
-//                 </div>
-
-//                 <div className="grid gap-8">
-//                     <Card>
-//                         <CardHeader>
-//                             <CardTitle>Profile</CardTitle>
-//                             <CardDescription>Manage your personal and company information.</CardDescription>
-//                         </CardHeader>
-//                         <CardContent className="flex items-center justify-between">
-//                             <p className="text-sm text-muted-foreground">Update your details that appear on invoices.</p>
-//                             <Button variant="outline" onClick={() => setLocation('/profile')}>
-//                                 <User className="w-4 h-4 mr-2"/>
-//                                 Go to Profile
-//                             </Button>
-//                         </CardContent>
-//                     </Card>
-                    
-//                     <Card>
-//                         <CardHeader>
-//                             <CardTitle>AI Features</CardTitle>
-//                             <CardDescription>Manage intelligent features within the app.</CardDescription>
-//                         </CardHeader>
-//                         <CardContent className="space-y-4">
-//                            <div className="flex items-center justify-between p-4 rounded-lg border">
-//                                 <Label htmlFor="ai-suggestions" className="flex items-center gap-3 cursor-pointer">
-//                                     <Sparkles className="w-5 h-5 text-yellow-500" />
-//                                     <div>
-//                                         <span className="font-medium">Enable AI Suggestions</span>
-//                                         <p className="text-xs text-muted-foreground">Get automatic suggestions for invoice item descriptions.</p>
-//                                     </div>
-//                                 </Label>
-//                                 <Switch
-//                                     id="ai-suggestions"
-//                                     checked={aiSuggestionsEnabled}
-//                                     onCheckedChange={handleAIToggle}
-//                                     disabled={updateSettingsMutation.isPending}
-//                                 />
-//                            </div>
-//                         </CardContent>
-//                     </Card>
-                    
-//                     <Card>
-//                         <CardHeader>
-//                             <CardTitle>Appearance</CardTitle>
-//                             <CardDescription>Customize the look and feel of the app.</CardDescription>
-//                         </CardHeader>
-//                         <CardContent className="space-y-4">
-//                            <div className="flex items-center justify-between p-4 rounded-lg border">
-//                                 <Label htmlFor="dark-mode" className="flex items-center gap-3 cursor-pointer">
-//                                     <Palette className="w-5 h-5" />
-//                                     <span>Dark Mode</span>
-//                                 </Label>
-//                                 <Switch
-//                                     id="dark-mode"
-//                                     checked={darkMode}
-//                                     onCheckedChange={handleDarkModeToggle}
-//                                     disabled={updateSettingsMutation.isPending}
-//                                 />
-//                            </div>
-//                         </CardContent>
-//                     </Card>
-
-//                     <Card>
-//                         <CardHeader>
-//                             <CardTitle>Notifications</CardTitle>
-//                             <CardDescription>Manage how you receive notifications.</CardDescription>
-//                         </CardHeader>
-//                         <CardContent className="space-y-4">
-//                            <div className="flex items-center justify-between p-4 rounded-lg border">
-//                                 <Label htmlFor="email-paid" className="flex items-center gap-3 cursor-pointer">
-//                                     <Bell className="w-5 h-5" />
-//                                     <span>Email me when an invoice is paid</span>
-//                                 </Label>
-//                                 <Switch
-//                                     id="email-paid"
-//                                     checked={notifications.emailOnPaid}
-//                                     onCheckedChange={(checked) => setNotifications(p => ({...p, emailOnPaid: checked}))}
-//                                 />
-//                            </div>
-//                            <div className="flex items-center justify-between p-4 rounded-lg border">
-//                                 <Label htmlFor="email-reminders" className="flex items-center gap-3 cursor-pointer">
-//                                     <Bell className="w-5 h-5" />
-//                                     <span>Send automatic payment reminders</span>
-//                                 </Label>
-//                                 <Switch
-//                                     id="email-reminders"
-//                                     checked={notifications.emailReminders}
-//                                     onCheckedChange={(checked) => setNotifications(p => ({...p, emailReminders: checked}))}
-//                                 />
-//                            </div>
-//                         </CardContent>
-//                     </Card>
-//                 </div>
-//             </main>
-//         </div>
-//     );
-// }
-
-
-
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
-  Settings, // Icon is still used in the header
-  User,     // Icon is still used in the content
-  Bell, 
-  Palette, 
-  Sparkles
+    Settings,
+    User,
+    Bell,
+    Palette,
+    Sparkles,
+    CreditCard,
+    Moon,
+    Sun,
+    Mail,
+    Building2,
+    Save,
+    Check,
+    ChevronRight,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-
-// --- YEH HAI UPDATE: AppLayout ko import kiya ---
-import AppLayout from "@/components/AppLayout"; 
-// --- YEH HAI UPDATE: Dock se related imports hata diye gaye ---
-
+import AppLayout from "@/components/AppLayout";
 import { useAppSettings } from "@/contexts/SettingsContext";
 import { useToast } from "@/hooks/use-toast";
 
-// --- YEH HAI UPDATE: mainMenuItems, footerMenuItems, aur getDockItems hata diye gaye ---
+// Horizontal tab items
+const TABS = [
+    { id: "profile", label: "Profile", icon: User },
+    { id: "appearance", label: "Appearance", icon: Palette },
+    { id: "ai", label: "AI", icon: Sparkles },
+    { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "billing", label: "Billing", icon: CreditCard },
+];
 
 export default function SettingsPage() {
-    const { user } = useAuth(); // Sirf 'user' ki zaroorat hai
+    const { user } = useAuth();
     const [, setLocation] = useLocation();
     const queryClient = useQueryClient();
     const { toast } = useToast();
-    
-    // Page-specific state and context
+
     const { aiSuggestionsEnabled, toggleAISuggestions, darkMode, toggleDarkMode } = useAppSettings();
+    const [activeTab, setActiveTab] = useState("profile");
     const [notifications, setNotifications] = useState({
         emailOnPaid: true,
         emailReminders: false,
+        weeklyReports: true,
     });
 
-    // Page-specific mutation
+    const [profileForm, setProfileForm] = useState({
+        companyName: user?.companyName || "",
+    });
+
     const updateSettingsMutation = useMutation({
-        mutationFn: (settings: { aiSuggestionsEnabled?: boolean, darkMode?: boolean }) => {
+        mutationFn: (settings: { aiSuggestionsEnabled?: boolean; darkMode?: boolean }) => {
             return apiRequest("PUT", "/api/settings", settings);
         },
         onSuccess: () => {
-            toast({ title: "Settings Saved!"});
+            toast({ title: "Settings Saved!", description: "Your preferences have been updated." });
             queryClient.invalidateQueries({ queryKey: ["authenticatedUser"] });
         },
         onError: () => {
-            toast({ title: "Error", description: "Could not save settings.", variant: "destructive"});
-        }
+            toast({ title: "Error", description: "Could not save settings.", variant: "destructive" });
+        },
     });
 
-    // Page-specific handlers
     const handleAIToggle = () => {
         toggleAISuggestions();
         updateSettingsMutation.mutate({ aiSuggestionsEnabled: !aiSuggestionsEnabled });
@@ -282,135 +75,289 @@ export default function SettingsPage() {
         toggleDarkMode();
         updateSettingsMutation.mutate({ darkMode: !darkMode });
     };
-    
-    // Page-specific effect
+
     useEffect(() => {
         const root = window.document.documentElement;
-        root.classList.toggle('dark', darkMode);
+        root.classList.toggle("dark", darkMode);
     }, [darkMode]);
-    
-    // --- YEH HAI UPDATE: Auth useEffect aur loading checks hata diye gaye (AppLayout handle karta hai) ---
 
-    // --- YEH HAI UPDATE: Page header ko define kiya ---
     const SettingsPageHeader = (
-      <div>
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-          Settings
-        </h1>
-        <p className="text-muted-foreground">
-          Manage your account, preferences, and app settings.
-        </p>
-      </div>
+        <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25">
+                <Settings className="w-6 h-6" />
+            </div>
+            <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground">Settings</h1>
+                <p className="text-sm text-muted-foreground">Manage your preferences and account</p>
+            </div>
+        </div>
     );
 
-    return (
-        // --- YEH HAI UPDATE: Page ko AppLayout mein wrap kiya ---
-        <AppLayout pageHeader={SettingsPageHeader}>
-            
-            {/* Saare wrapper divs (min-h-screen, main) hata diye gaye hain */}
-            
-            <div className="grid gap-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Profile</CardTitle>
-                        <CardDescription>Manage your personal and company information.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <p className="text-sm text-muted-foreground">Update your details that appear on invoices.</p>
-                        <Button variant="outline" onClick={() => setLocation('/profile')} className="w-full sm:w-auto">
-                            <User className="w-4 h-4 mr-2"/>
-                            Go to Profile
-                        </Button>
-                    </CardContent>
-                </Card>
-                
-                <Card>
-                    <CardHeader>
-                        <CardTitle>AI Features</CardTitle>
-                        <CardDescription>Manage intelligent features within the app.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border gap-4">
-                            <Label htmlFor="ai-suggestions" className="flex items-center gap-3 cursor-pointer">
-                                <Sparkles className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                                <div>
-                                    <span className="font-medium">Enable AI Suggestions</span>
-                                    <p className="text-xs text-muted-foreground">Get automatic suggestions for invoice item descriptions.</p>
-                                </div>
-                            </Label>
-                            <Switch
-                                id="ai-suggestions"
-                                checked={aiSuggestionsEnabled}
-                                onCheckedChange={handleAIToggle}
-                                disabled={updateSettingsMutation.isPending}
-                            />
-                       </div>
-                    </CardContent>
-                </Card>
-                
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Appearance</CardTitle>
-                        <CardDescription>Customize the look and feel of the app.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border gap-4">
-                            <Label htmlFor="dark-mode" className="flex items-center gap-3 cursor-pointer">
-                                <Palette className="w-5 h-5 flex-shrink-0" />
-                                <div>
-                                  <span className="font-medium">Dark Mode</span>
-                                  <p className="text-xs text-muted-foreground">Toggle between light and dark themes.</p>
-                                </div>
-                            </Label>
-                            <Switch
-                                id="dark-mode"
-                                checked={darkMode}
-                                onCheckedChange={handleDarkModeToggle}
-                                disabled={updateSettingsMutation.isPending}
-                            />
-                       </div>
-                    </CardContent>
-                </Card>
+    // Profile Section
+    const ProfileSection = () => (
+        <div className="space-y-6">
+            <div className="grid gap-5 sm:grid-cols-2">
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium">Full Name</Label>
+                    <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input value={user?.name || ""} className="pl-10 bg-muted/50" disabled />
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Notifications</CardTitle>
-                        <CardDescription>Manage how you receive notifications.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border gap-4">
-                            <Label htmlFor="email-paid" className="flex items-center gap-3 cursor-pointer">
-                                <Bell className="w-5 h-5 flex-shrink-0" />
-                                <div>
-                                  <span className="font-medium">Email me when an invoice is paid</span>
-                                  <p className="text-xs text-muted-foreground">Receive an email confirmation upon payment.</p>
-                                </div>
-                            </Label>
-                            <Switch
-                                id="email-paid"
-                                checked={notifications.emailOnPaid}
-                                onCheckedChange={(checked) => setNotifications(p => ({...p, emailOnPaid: checked}))}
-                            />
-                       </div>
-                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg border gap-4">
-                            <Label htmlFor="email-reminders" className="flex items-center gap-3 cursor-pointer">
-                                <Bell className="w-5 h-5 flex-shrink-0" />
-                                <div>
-                                  <span className="font-medium">Send automatic payment reminders</span>
-                                  <p className="text-xs text-muted-foreground">Remind clients about overdue invoices (Pro feature).</p>
-                                </div>
-                            </Label>
-                            <Switch
-                                id="email-reminders"
-                                checked={notifications.emailReminders}
-                                onCheckedChange={(checked) => setNotifications(p => ({...p, emailReminders: checked}))}
-                                // Example: disabled={!isSubscribed}
-                            />
-                       </div>
-                    </CardContent>
-                </Card>
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium">Email Address</Label>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input value={user?.email || ""} className="pl-10 bg-muted/50" disabled />
+                    </div>
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                    <Label className="text-sm font-medium">Company Name</Label>
+                    <div className="relative">
+                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                            value={profileForm.companyName}
+                            onChange={(e) => setProfileForm((p) => ({ ...p, companyName: e.target.value }))}
+                            className="pl-10"
+                            placeholder="Your company name"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-4 border-t">
+                <Button onClick={() => setLocation("/profile")} variant="outline" className="gap-2">
+                    <User className="w-4 h-4" /> View Full Profile
+                </Button>
+                <Button className="gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25">
+                    <Save className="w-4 h-4" /> Save Changes
+                </Button>
+            </div>
+        </div>
+    );
+
+    // Appearance Section
+    const AppearanceSection = () => (
+        <div className="space-y-6">
+            {/* Theme Toggle Card */}
+            <div className="p-5 rounded-2xl border bg-gradient-to-br from-background to-muted/30">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className={`p-3 rounded-xl transition-colors ${darkMode ? 'bg-slate-800' : 'bg-amber-100'}`}>
+                            {darkMode ? <Moon className="w-5 h-5 text-indigo-400" /> : <Sun className="w-5 h-5 text-amber-600" />}
+                        </div>
+                        <div>
+                            <p className="font-semibold">Theme Mode</p>
+                            <p className="text-sm text-muted-foreground">
+                                {darkMode ? "Dark mode enabled" : "Light mode enabled"}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-muted/50 px-3 py-2 rounded-full">
+                        <Sun className="w-4 h-4 text-muted-foreground" />
+                        <Switch
+                            checked={darkMode}
+                            onCheckedChange={handleDarkModeToggle}
+                            disabled={updateSettingsMutation.isPending}
+                        />
+                        <Moon className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Color Accent */}
+            <div className="p-5 rounded-2xl border">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
+                        <Palette className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                        <p className="font-semibold">Accent Color</p>
+                        <p className="text-sm text-muted-foreground">Customize your brand color</p>
+                    </div>
+                </div>
+                <div className="flex gap-3">
+                    {[
+                        { color: "#6366F1", name: "Indigo" },
+                        { color: "#8B5CF6", name: "Purple" },
+                        { color: "#EC4899", name: "Pink" },
+                        { color: "#10B981", name: "Green" },
+                        { color: "#F59E0B", name: "Amber" },
+                        { color: "#EF4444", name: "Red" },
+                    ].map((item) => (
+                        <button
+                            key={item.color}
+                            className="w-10 h-10 rounded-xl border-2 border-transparent hover:border-white/50 transition-all hover:scale-110 shadow-lg"
+                            style={{ backgroundColor: item.color }}
+                            title={item.name}
+                        />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
+    // AI Section
+    const AISection = () => (
+        <div className="space-y-6">
+            <div className="p-5 rounded-2xl border bg-gradient-to-br from-yellow-500/5 to-orange-500/5">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg shadow-orange-500/25">
+                            <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <p className="font-semibold">AI Suggestions</p>
+                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white uppercase tracking-wide">
+                                    Beta
+                                </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                Smart suggestions for invoice descriptions & pricing
+                            </p>
+                        </div>
+                    </div>
+                    <Switch
+                        checked={aiSuggestionsEnabled}
+                        onCheckedChange={handleAIToggle}
+                        disabled={updateSettingsMutation.isPending}
+                    />
+                </div>
+
+                {aiSuggestionsEnabled && (
+                    <div className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <p className="text-sm text-green-700 dark:text-green-400">
+                            AI suggestions are active for invoice creation
+                        </p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+    // Notifications Section
+    const NotificationsSection = () => (
+        <div className="space-y-4">
+            {[
+                { id: "emailOnPaid", title: "Payment Received", desc: "Get notified when a client pays", icon: CreditCard },
+                { id: "emailReminders", title: "Payment Reminders", desc: "Auto-remind clients about overdue invoices", icon: Bell, isPro: true },
+                { id: "weeklyReports", title: "Weekly Reports", desc: "Summary of your invoice activity", icon: Mail },
+            ].map((item) => (
+                <div key={item.id} className="p-4 rounded-2xl border flex items-center justify-between gap-4 hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center gap-4">
+                        <div className="p-2.5 rounded-xl bg-muted">
+                            <item.icon className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <p className="font-medium">{item.title}</p>
+                                {item.isPro && (
+                                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                                        PRO
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{item.desc}</p>
+                        </div>
+                    </div>
+                    <Switch
+                        checked={notifications[item.id as keyof typeof notifications]}
+                        onCheckedChange={(checked) => setNotifications((p) => ({ ...p, [item.id]: checked }))}
+                    />
+                </div>
+            ))}
+        </div>
+    );
+
+    // Billing Section
+    const BillingSection = () => (
+        <div className="space-y-6">
+            <div className="p-6 rounded-2xl border bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/25">
+                            <CreditCard className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <p className="text-lg font-bold">
+                                {user?.subscriptionStatus === "active" ? "Pro Plan" : "Free Plan"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                {user?.subscriptionStatus === "active"
+                                    ? "Unlimited invoices & premium templates"
+                                    : "Upgrade to unlock all features"}
+                            </p>
+                        </div>
+                    </div>
+                    <Button
+                        onClick={() => setLocation("/subscription")}
+                        className={
+                            user?.subscriptionStatus === "active"
+                                ? ""
+                                : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25"
+                        }
+                        variant={user?.subscriptionStatus === "active" ? "outline" : "default"}
+                    >
+                        {user?.subscriptionStatus === "active" ? "Manage Plan" : "Upgrade to Pro"}
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                </div>
+            </div>
+
+            {user?.invoiceCredits !== undefined && user.invoiceCredits > 0 && (
+                <div className="p-5 rounded-2xl border flex items-center justify-between">
+                    <div>
+                        <p className="font-semibold">Invoice Credits</p>
+                        <p className="text-sm text-muted-foreground">For premium templates</p>
+                    </div>
+                    <div className="text-3xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+                        {user.invoiceCredits}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case "profile": return <ProfileSection />;
+            case "appearance": return <AppearanceSection />;
+            case "ai": return <AISection />;
+            case "notifications": return <NotificationsSection />;
+            case "billing": return <BillingSection />;
+            default: return <ProfileSection />;
+        }
+    };
+
+    return (
+        <AppLayout pageHeader={SettingsPageHeader}>
+            {/* Horizontal Tabs */}
+            <div className="mb-8 -mx-2 px-2 overflow-x-auto scrollbar-hide">
+                <div className="flex gap-2 min-w-max">
+                    {TABS.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all ${activeTab === tab.id
+                                    ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
+                                    : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                }`}
+                        >
+                            <tab.icon className="w-4 h-4" />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="bg-card rounded-2xl border p-6 lg:p-8">
+                {renderContent()}
             </div>
         </AppLayout>
     );
 }
-

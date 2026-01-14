@@ -8,20 +8,23 @@
 
 /* Basic Editable & Placeholder Styles */
 .font-playfair {
-    font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', serif;
 }
+
 [contenteditable="true"]:focus {
-    outline: 2px solid #a7f3d0;
-    background-color: #f0fdf4;
-    border-radius: 4px;
+  outline: 2px solid #a7f3d0;
+  background-color: #f0fdf4;
+  border-radius: 4px;
 }
+
 [contenteditable="true"][placeholder]:empty::before {
-    content: attr(placeholder);
-    color: #9ca3af;
-    pointer-events: none;
+  content: attr(placeholder);
+  color: #9ca3af;
+  pointer-events: none;
 }
+
 .table-row:hover .delete-btn {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* --- Theme Specific Styles --- */
@@ -29,62 +32,120 @@
 
 /* Classic Theme */
 .theme-classic {
-    background-color: white;
-    box-shadow: none;
-    border: 1px solid #ccc;
-    color: #333;
+  background-color: white;
+  box-shadow: none;
+  border: 1px solid #ccc;
+  color: #333;
 }
-.theme-classic .side-banner { display: none; }
-.theme-classic .font-playfair { font-family: 'Times New Roman', Times, serif; }
-.theme-classic header h1, .theme-classic header h2 { text-align: center; }
-.theme-classic th { background-color: #f2f2f2; color: #333; }
+
+.theme-classic .side-banner {
+  display: none;
+}
+
+.theme-classic .font-playfair {
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.theme-classic header h1,
+.theme-classic header h2 {
+  text-align: center;
+}
+
+.theme-classic th {
+  background-color: #f2f2f2;
+  color: #333;
+}
 
 /* Minimalist Theme */
 .theme-minimalist {
-    background: white;
-    box-shadow: none;
-    border: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: none;
+  border: 1px solid #e5e7eb;
 }
-.theme-minimalist .side-banner { display: none; }
+
+.theme-minimalist .side-banner {
+  display: none;
+}
+
 .theme-minimalist header h1 {
-    font-family: 'Inter', sans-serif;
-    font-size: 2.5rem;
-    letter-spacing: normal;
-    font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: normal;
+  font-weight: 600;
 }
-.theme-minimalist header h2 { font-size: 1.25rem; color: #4b5563; }
-.theme-minimalist th { color: #111827; border-color: #111827; }
+
+.theme-minimalist header h2 {
+  font-size: 1.25rem;
+  color: #4b5563;
+}
+
+.theme-minimalist th {
+  color: #111827;
+  border-color: #111827;
+}
 
 /* Colorful Theme */
 .theme-colorful {
-    background-color: #e0f7fa;
-    color: #004d40;
+  background-color: #e0f7fa;
+  color: #004d40;
 }
-.theme-colorful .side-banner { background-image: linear-gradient(to bottom, #4dd0e1, #00acc1); }
-.theme-colorful header h1 { color: #00796b; }
-.theme-colorful header h2 { color: #0097a7; }
-.theme-colorful th { background-color: #b2ebf2; color: #006064; border-color: #4dd0e1; }
-.theme-colorful .border-gray-400 { border-color: #4dd0e1; }
-.theme-colorful .border-gray-300 { border-color: #f11b54; }
-.theme-colorful .text-gray-600 { color: #006064; }
-.theme-colorful .text-gray-500 { color: #00796b; }
-.theme-colorful .text-gray-800 { color: #004d40; }
+
+.theme-colorful .side-banner {
+  background-image: linear-gradient(to bottom, #4dd0e1, #00acc1);
+}
+
+.theme-colorful header h1 {
+  color: #00796b;
+}
+
+.theme-colorful header h2 {
+  color: #0097a7;
+}
+
+.theme-colorful th {
+  background-color: #b2ebf2;
+  color: #006064;
+  border-color: #4dd0e1;
+}
+
+.theme-colorful .border-gray-400 {
+  border-color: #4dd0e1;
+}
+
+.theme-colorful .border-gray-300 {
+  border-color: #f11b54;
+}
+
+.theme-colorful .text-gray-600 {
+  color: #006064;
+}
+
+.theme-colorful .text-gray-500 {
+  color: #00796b;
+}
+
+.theme-colorful .text-gray-800 {
+  color: #004d40;
+}
 
 /* Logo Watermark */
-.logo-watermark-container { position: relative; }
+.logo-watermark-container {
+  position: relative;
+}
+
 .logo-watermark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 350px;
-    height: 350px;
-    pointer-events: none;
-    opacity: 0.08;
-    z-index: 0;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  height: 350px;
+  pointer-events: none;
+  opacity: 0.08;
+  z-index: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 
@@ -95,6 +156,7 @@
     from {
       transform: translateX(0);
     }
+
     to {
       transform: translateX(-50%);
     }
@@ -106,25 +168,26 @@
 
   .hover-elevate:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
   }
 
   .dark .hover-elevate:hover {
-     box-shadow: 0 10px 20px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
   }
 }
 
 
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
+  --button-outline: rgba(0, 0, 0, .10);
+  --badge-outline: rgba(0, 0, 0, .05);
 
   /* Automatic computation of border around primary / danger buttons */
-  --opaque-button-border-intensity: -8; /* In terms of percentages */
+  --opaque-button-border-intensity: -8;
+  /* In terms of percentages */
 
   /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  --elevate-1: rgba(0, 0, 0, .03);
+  --elevate-2: rgba(0, 0, 0, .08);
 
   --background: 210 20% 98%;
 
@@ -191,7 +254,8 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: .5rem; /* 8px */
+  --radius: .5rem;
+  /* 8px */
   --shadow-2xs: 0px 1px 2px 0px hsl(220 13% 18% / 0.05);
   --shadow-xs: 0px 1px 3px 0px hsl(220 13% 18% / 0.10);
   --shadow-sm: 0px 2px 4px -1px hsl(220 13% 18% / 0.06), 0px 1px 2px -1px hsl(220 13% 18% / 0.10);
@@ -235,14 +299,15 @@
 }
 
 .dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
+  --button-outline: rgba(255, 255, 255, .10);
+  --badge-outline: rgba(255, 255, 255, .05);
 
-  --opaque-button-border-intensity: 9;  /* In terms of percentages */
+  --opaque-button-border-intensity: 9;
+  /* In terms of percentages */
 
   /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  --elevate-1: rgba(255, 255, 255, .04);
+  --elevate-2: rgba(255, 255, 255, .09);
 
   --background: 220 18% 12%;
 

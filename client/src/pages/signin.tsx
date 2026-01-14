@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { FileText, Mail, Lock, Eye, EyeOff, Sparkles, Shield, Zap } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import fileIcon from "@/attached_assets/file.png";
 
 // A simple SVG component for the Google icon
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -32,52 +37,258 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 export default function SignIn() {
-  // This function now redirects to the backend route that starts the Google OAuth flow.
-  const handleSignIn = () => {
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // This function redirects to the backend route that starts the Google OAuth flow.
+  const handleGoogleSignIn = () => {
     window.location.href = '/auth/google';
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md" data-testid="card-signin">
-        <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <FileText className="w-8 h-8 text-primary" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold">Welcome to Lomerse</CardTitle>
-            <CardDescription className="mt-2">
-              Sign in to create beautiful invoices with professional templates
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button
-            onClick={handleSignIn}
-            className="w-full"
-            size="lg"
-            data-testid="button-signin"
-          >
-            <GoogleIcon className="w-5 h-5 mr-2" />
-            Sign In with Google
-          </Button>
+  // Handle email/password sign in
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
-          <div className="space-y-3 pt-4 border-t">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <FileText className="w-4 h-4 mr-2 text-primary" />
-              <span>Access 13 professional invoice templates</span>
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      toast({
+        title: "Welcome back!",
+        description: "Redirecting to dashboard...",
+      });
+
+      // Redirect to dashboard after successful login
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
+
+    } catch (err: any) {
+      setError(err.message);
+      toast({
+        title: "Login failed",
+        description: err.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-primary/5 to-chart-2/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-8 items-center relative z-10">
+        {/* Left Side - Branding & Features (Hidden on mobile) */}
+        <div className="hidden lg:flex flex-col flex-1 space-y-8 pr-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <img src={fileIcon} alt="Lomerse" className="w-12 h-12 rounded-xl" />
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                Lomerse
+              </h1>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <FileText className="w-4 h-4 mr-2 text-primary" />
-              <span>Download invoices as PDF</span>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Create stunning, professional invoices in minutes. Impress your clients with beautiful designs.
+            </p>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="space-y-4">
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 transition-all hover:shadow-md hover:border-primary/20">
+              <div className="w-10 h-10 rounded-lg bg-chart-3/10 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-chart-3" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">13+ Professional Templates</h3>
+                <p className="text-sm text-muted-foreground">Choose from a variety of stunning designs</p>
+              </div>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <FileText className="w-4 h-4 mr-2 text-primary" />
-              <span>Subscribe for premium themes</span>
+
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 transition-all hover:shadow-md hover:border-primary/20">
+              <div className="w-10 h-10 rounded-lg bg-chart-2/10 flex items-center justify-center shrink-0">
+                <Zap className="w-5 h-5 text-chart-2" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Instant PDF Export</h3>
+                <p className="text-sm text-muted-foreground">Download and share invoices instantly</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 transition-all hover:shadow-md hover:border-primary/20">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Shield className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Secure & Private</h3>
+                <p className="text-sm text-muted-foreground">Your data is encrypted and protected</p>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Right Side - Login Card */}
+        <Card className="w-full max-w-md backdrop-blur-sm bg-card/80 border-border/50 shadow-2xl" data-testid="card-signin">
+          <CardHeader className="space-y-4 text-center pb-2">
+            {/* Mobile Logo */}
+            <div className="lg:hidden mx-auto">
+              <div className="flex items-center justify-center gap-2">
+                <img src={fileIcon} alt="Lomerse" className="w-10 h-10 rounded-xl" />
+                <span className="text-xl font-bold">Lomerse</span>
+              </div>
+            </div>
+
+            <div>
+              <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+              <CardDescription className="mt-2">
+                Sign in to access your invoices and templates
+              </CardDescription>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Google Sign In Button */}
+            <Button
+              onClick={handleGoogleSignIn}
+              variant="outline"
+              className="w-full h-12 text-base font-medium border-2 hover:bg-muted/50 transition-all duration-200"
+              size="lg"
+              data-testid="button-google-signin"
+            >
+              <GoogleIcon className="w-5 h-5 mr-3" />
+              Continue with Google
+            </Button>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-3 text-muted-foreground">Or continue with email</span>
+              </div>
+            </div>
+
+            {/* Email/Password Form */}
+            <form onSubmit={handleEmailSignIn} className="space-y-4">
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 h-11 border-border/80 focus:border-primary transition-colors"
+                    data-testid="input-email"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 h-11 border-border/80 focus:border-primary transition-colors"
+                    data-testid="input-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded border-border accent-primary" />
+                  <span className="text-muted-foreground">Remember me</span>
+                </label>
+                <a href="#" className="text-primary hover:underline font-medium">
+                  Forgot password?
+                </a>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-12 text-base font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
+                size="lg"
+                disabled={isLoading}
+                data-testid="button-email-signin"
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    Signing in...
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+
+            {/* Sign Up Link */}
+            <p className="text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <a
+                href="/signup"
+                className="text-primary hover:underline font-semibold"
+              >
+                Sign up for free
+              </a>
+            </p>
+
+            {/* Terms */}
+            <p className="text-center text-xs text-muted-foreground px-4">
+              By signing in, you agree to our{" "}
+              <a href="#" className="underline hover:text-foreground">Terms of Service</a>
+              {" "}and{" "}
+              <a href="#" className="underline hover:text-foreground">Privacy Policy</a>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

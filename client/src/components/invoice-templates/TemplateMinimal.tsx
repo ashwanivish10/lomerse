@@ -1,95 +1,251 @@
-import React from 'react';
-import type { InvoiceData, ThemeClasses } from './types';
+import React from "react";
+import type { InvoiceData, ThemeClasses } from "./types";
+import { EditableText, EditableNumber } from "./EditableComponents";
 
 interface TemplateProps {
   data: InvoiceData;
   logoUrl: string | null;
   themeClasses: ThemeClasses;
+  editable?: boolean;
+  onDataChange?: (data: InvoiceData) => void;
 }
 
-const TemplateMinimal: React.FC<TemplateProps> = ({ data, logoUrl, themeClasses }) => {
+/**
+ * MINIMAL TEMPLATE - Ultra-clean with lots of whitespace
+ * Simple lines, minimal colors, elegant typography
+ */
+const TemplateMinimal: React.FC<TemplateProps> = ({
+  data,
+  logoUrl,
+  themeClasses,
+  editable = false,
+  onDataChange,
+}) => {
+  const updateData = (updates: Partial<InvoiceData>) => {
+    if (onDataChange) onDataChange({ ...data, ...updates });
+  };
+
+  const updateFrom = (field: string, value: string) => {
+    if (onDataChange) onDataChange({ ...data, from: { ...data.from, [field]: value } });
+  };
+
+  const updateTo = (field: string, value: string) => {
+    if (onDataChange) onDataChange({ ...data, to: { ...data.to, [field]: value } });
+  };
+
+  const updateItem = (index: number, field: string, value: string | number) => {
+    if (onDataChange) {
+      const newItems = data.items.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      );
+      const subtotal = newItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      const tax = subtotal * data.taxRate;
+      const total = subtotal + tax;
+      onDataChange({ ...data, items: newItems, subtotal, tax, total });
+    }
+  };
+
+  const addItem = () => {
+    if (onDataChange) {
+      const newItems = [...data.items, { description: "New Item", quantity: 1, price: 0 }];
+      onDataChange({ ...data, items: newItems });
+    }
+  };
+
+  const removeItem = (index: number) => {
+    if (onDataChange && data.items.length > 1) {
+      const newItems = data.items.filter((_, i) => i !== index);
+      const subtotal = newItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      const tax = subtotal * data.taxRate;
+      const total = subtotal + tax;
+      onDataChange({ ...data, items: newItems, subtotal, tax, total });
+    }
+  };
+
   return (
-    <div className="p-12 bg-white dark:bg-gray-900 text-black dark:text-white font-sans">
-      {/* Header */}
-      <div className="grid grid-cols-2 items-start mb-16">
+    <div className="p-12 bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* HEADER */}
+      <div className="flex justify-between items-start mb-6">
+        <h1 className="text-lg font-bold text-gray-900">
+          <EditableText
+            value={data.from.name}
+            onChange={(v) => updateFrom("name", v)}
+            editable={editable}
+            placeholder="Company"
+          />
+        </h1>
+        <h2 className="text-4xl font-light text-gray-400">Invoice</h2>
+      </div>
+
+      {/* DIVIDER */}
+      <div className="border-b border-gray-200 mb-8"></div>
+
+      {/* INFO GRID */}
+      <div className="grid grid-cols-3 gap-8 mb-10 text-sm">
+        {/* From */}
         <div>
-          {logoUrl ? (
-            <img src={logoUrl} alt="Company Logo" className="h-10 w-auto mb-4" />
-          ) : (
-            <h1 className={`text-2xl font-bold uppercase tracking-wider ${themeClasses.primary}`}>{data.from.name}</h1>
-          )}
+          <p className="text-xs text-gray-400 mb-1">From</p>
+          <p className="font-medium">
+            <EditableText
+              value={data.from.name}
+              onChange={(v) => updateFrom("name", v)}
+              editable={editable}
+            />
+          </p>
+          <p className="text-gray-500">
+            <EditableText
+              value={data.from.address}
+              onChange={(v) => updateFrom("address", v)}
+              editable={editable}
+            />
+          </p>
+          <p className="text-gray-500">
+            <EditableText
+              value={data.from.email || ""}
+              onChange={(v) => updateFrom("email", v)}
+              editable={editable}
+            />
+          </p>
         </div>
+
+        {/* Bill To */}
+        <div>
+          <p className="text-xs text-gray-400 mb-1">Bill To</p>
+          <p className="font-medium">
+            <EditableText
+              value={data.to.name}
+              onChange={(v) => updateTo("name", v)}
+              editable={editable}
+            />
+          </p>
+          <p className="text-gray-500">
+            <EditableText
+              value={data.to.address}
+              onChange={(v) => updateTo("address", v)}
+              editable={editable}
+            />
+          </p>
+        </div>
+
+        {/* Invoice Details */}
         <div className="text-right">
-          <h2 className="text-4xl font-light text-gray-800 dark:text-gray-200">INVOICE</h2>
-          <p className="text-sm text-gray-500 mt-2">{data.invoiceNumber}</p>
+          <div className="mb-3">
+            <p className="text-xs text-gray-400">Invoice No.</p>
+            <p className="font-bold">
+              <EditableText
+                value={String(data.invoiceNumber).padStart(5, "0")}
+                onChange={(v) => updateData({ invoiceNumber: v })}
+                editable={editable}
+              />
+            </p>
+          </div>
+          <div className="mb-3">
+            <p className="text-xs text-gray-400">Date</p>
+            <p>
+              <EditableText
+                value={data.invoiceDate}
+                onChange={(v) => updateData({ invoiceDate: v })}
+                editable={editable}
+              />
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-400">Due Date</p>
+            <p>
+              <EditableText
+                value={data.dueDate}
+                onChange={(v) => updateData({ dueDate: v })}
+                editable={editable}
+              />
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* From/To Details */}
-      <div className="grid grid-cols-3 gap-10 mb-16 text-sm">
-        <div>
-          <h3 className="font-semibold text-gray-500 mb-2">Billed To</h3>
-          <p className="font-bold text-gray-800 dark:text-gray-200">{data.to.name}</p>
-          <p className="text-gray-600 dark:text-gray-400">{data.to.address}</p>
+      {/* TABLE */}
+      <div className="border-t-2 border-gray-900 mb-6">
+        {/* Header */}
+        <div className="grid grid-cols-12 py-3 text-xs text-gray-400 uppercase tracking-wide border-b border-gray-200">
+          <div className="col-span-5">Description</div>
+          <div className="col-span-2 text-center">Qty</div>
+          <div className="col-span-2 text-right">Rate</div>
+          <div className="col-span-2 text-right">Amount</div>
+          {editable && <div className="col-span-1"></div>}
         </div>
-        <div>
-          <h3 className="font-semibold text-gray-500 mb-2">From</h3>
-          <p className="font-bold text-gray-800 dark:text-gray-200">{data.from.name}</p>
-          <p className="text-gray-600 dark:text-gray-400">{data.from.address}</p>
-        </div>
-        <div className="text-right">
-            <p className="font-semibold text-gray-500">Date Issued</p>
-            <p className="text-gray-800 dark:text-gray-200">{data.invoiceDate}</p>
-            <p className="font-semibold text-gray-500 mt-2">Due Date</p>
-            <p className="text-gray-800 dark:text-gray-200">{data.dueDate}</p>
+
+        {/* Rows */}
+        {data.items.map((item, index) => (
+          <div
+            key={index}
+            className="grid grid-cols-12 py-4 items-center border-b border-gray-100 group"
+          >
+            <div className="col-span-5 font-medium">
+              <EditableText
+                value={item.description}
+                onChange={(v) => updateItem(index, "description", v)}
+                editable={editable}
+              />
+            </div>
+            <div className="col-span-2 text-center text-gray-500">
+              <EditableNumber
+                value={item.quantity}
+                onChange={(v) => updateItem(index, "quantity", v)}
+                editable={editable}
+              />
+            </div>
+            <div className="col-span-2 text-right text-gray-500">
+              ₹<EditableNumber
+                value={item.price}
+                onChange={(v) => updateItem(index, "price", v)}
+                editable={editable}
+              />
+            </div>
+            <div className="col-span-2 text-right font-medium">
+              ₹{(item.price * item.quantity).toFixed(2)}
+            </div>
+            {editable && (
+              <div className="col-span-1 text-right">
+                <button
+                  onClick={() => removeItem(index)}
+                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
+                  disabled={data.items.length <= 1}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {editable && (
+          <button onClick={addItem} className="w-full py-3 text-sm text-blue-600 hover:bg-blue-50">
+            + Add Item
+          </button>
+        )}
+      </div>
+
+      {/* TOTALS */}
+      <div className="flex justify-end">
+        <div className="w-64">
+          <div className="border-t border-gray-900 pt-4 space-y-2">
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Subtotal</span>
+              <span className="text-gray-900">₹{data.subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Tax</span>
+              <span className="text-gray-900">₹{data.tax.toFixed(2)}</span>
+            </div>
+            <div className="border-t-2 border-gray-900 pt-3 flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span>₹{data.total.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Items Table */}
-      <table className="w-full mb-16 text-sm">
-        <thead className="border-b-2 border-gray-300 dark:border-gray-600">
-          <tr>
-            <th className="text-left py-3 font-semibold uppercase text-gray-500 tracking-wider">Description</th>
-            <th className="text-center py-3 font-semibold uppercase text-gray-500 tracking-wider">Qty</th>
-            <th className="text-right py-3 font-semibold uppercase text-gray-500 tracking-wider">Price</th>
-            <th className="text-right py-3 font-semibold uppercase text-gray-500 tracking-wider">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.items.map((item, index) => (
-            <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-              <td className="py-4 pr-3 font-medium text-gray-800 dark:text-gray-200">{item.description}</td>
-              <td className="text-center py-4 text-gray-600 dark:text-gray-400">{item.quantity}</td>
-              <td className="text-right py-4 text-gray-600 dark:text-gray-400">₹{item.price.toFixed(2)}</td>
-              <td className="text-right py-4 font-medium text-gray-800 dark:text-gray-200">₹{(item.quantity * item.price).toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Totals */}
-      <div className="flex justify-end mb-16">
-        <div className="w-full max-w-xs space-y-3">
-            <div className="flex justify-between">
-                <span className="text-gray-500">Subtotal</span>
-                <span className="font-medium text-gray-800 dark:text-gray-200">₹{data.subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-                <span className="text-gray-500">GST (18%)</span>
-                <span className="font-medium text-gray-800 dark:text-gray-200">₹{data.tax.toFixed(2)}</span>
-            </div>
-            <div className={`flex justify-between text-2xl font-bold pt-3 mt-3 border-t-2 border-gray-300 dark:border-gray-600 ${themeClasses.primary}`}>
-                <span>Total Due</span>
-                <span>₹{data.total.toFixed(2)}</span>
-            </div>
-        </div>
-      </div>
-      
-      {/* Footer Notes */}
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
-        <h4 className={`text-lg font-semibold mb-2 ${themeClasses.primary}`}>Thank You!</h4>
-        <p className="text-xs text-gray-500">{data.notes}</p>
-      </div>
+      {/* FOOTER */}
+      <p className="text-sm text-gray-400 mt-12">Thank you.</p>
     </div>
   );
 };

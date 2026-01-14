@@ -6,45 +6,62 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import SignIn from "@/pages/signin";
+import SignUp from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
-import CreateInvoice from "@/pages/create-invoice";
 import Subscription from "@/pages/subscription";
 import NotFound from "@/pages/not-found";
 import CalendarPage from "./pages/CalendarPage";
 import ProfilePage from "./pages/ProfilePage";
 import ClientsPage from "./pages/ClientsPage";
 import ClientDetailPage from "./pages/ClientDetailPage";
-import TemplateSelectionPage from "./pages/TemplateSelectionPage";
-import ThemeSelectionPage from "./pages/ThemeSelectionPage";
 import HelpPage from "./pages/HelpPage";
 import SettingsPage from "./pages/SettingsPage";
+import InvoicingGuidesPage from "./pages/InvoicingGuidesPage";
+import AccountBillingPage from "./pages/AccountBillingPage";
+import DocumentationPage from "./pages/DocumentationPage";
+import ReportsPage from "./pages/ReportsPage";
 
-// --- NAYA IMPORT ---
-// Settings context ko import karein
+// Settings context
 import { SettingsProvider } from "./contexts/SettingsContext";
 
-function Router() {
+// --- Invoice Imports ---
+import { InvoiceProvider } from "./contexts/InvoiceContext";
+import InvoiceEditorPage from "./pages/InvoiceEditorPage";
+import "./Editor.css"; // Import the main stylesheet
+
+/**
+ * Main application router. Handles protected and public routes.
+ */
+function Router(): JSX.Element {
   const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <Switch>
-      {/* Public Routes */}
-      {isLoading || !isAuthenticated ? (
+      {/* Public Routes - only when NOT authenticated */}
+      {!isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
           <Route path="/signin" component={SignIn} />
-          {/* Agar user logged in nahi hai, toh baaki saare anjaan routes ko signin par bhej dein */}
+          <Route path="/signup" component={SignUp} />
+          {/* Redirect all other unknown routes to signin */}
           <Route>
             <Redirect to="/signin" />
           </Route>
         </>
       ) : (
-      // Authenticated Routes
+        // Authenticated Routes
         <>
+          {/* --- Core App Routes --- */}
           <Route path="/" component={Dashboard} />
-          <Route path="/choose-template" component={TemplateSelectionPage} />
-          <Route path="/choose-theme" component={ThemeSelectionPage} />
-          <Route path="/create-invoice" component={CreateInvoice} />
           <Route path="/clients" component={ClientsPage} />
           <Route path="/clients/:id" component={ClientDetailPage} />
           <Route path="/profile" component={ProfilePage} />
@@ -52,27 +69,49 @@ function Router() {
           <Route path="/help" component={HelpPage} />
           <Route path="/calendar" component={CalendarPage} />
           <Route path="/subscription" component={Subscription} />
-          {/* Faltu /LayoutTemplate route hata diya gaya hai */}
+          <Route path="/reports" component={ReportsPage} />
+
+          {/* --- Invoice Editor (New Unified Flow) --- */}
+          <Route path="/create-invoice" component={InvoiceEditorPage} />
+
+          {/* --- Old routes redirect to new editor --- */}
+          <Route path="/choose-template">
+            <Redirect to="/create-invoice" />
+          </Route>
+          <Route path="/choose-theme">
+            <Redirect to="/create-invoice" />
+          </Route>
+
+          {/* --- Documentation Routes --- */}
+          <Route path="/docs/invoicing" component={InvoicingGuidesPage} />
+          <Route path="/docs/billing" component={AccountBillingPage} />
+          <Route path="/docs" component={DocumentationPage} />
         </>
       )}
-      {/* 404 Not Found page hamesha aakhir mein */}
+      {/* 404 Not Found page always last */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-export default function App() {
+/**
+ * Root application component. Sets up all global providers.
+ */
+export default function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {/* --- YAHAN UPDATE KIYA GAYA HAI --- */}
-        {/* Poore app ko SettingsProvider se wrap kar diya hai */}
         <SettingsProvider>
-          <Router />
+          {/* Wrap the Router with InvoiceProvider.
+            This makes the invoice context (template, theme, data) 
+            available to all authenticated pages.
+          */}
+          <InvoiceProvider>
+            <Router />
+          </InvoiceProvider>
         </SettingsProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
   );
 }
-

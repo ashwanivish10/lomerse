@@ -1,87 +1,262 @@
-import React from 'react';
-import type { InvoiceData, ThemeClasses } from './types'; // Ek common type file banayenge
+import React from "react";
+import type { InvoiceData, ThemeClasses } from "./types";
+import { EditableText, EditableNumber } from "./EditableComponents";
 
 interface TemplateProps {
   data: InvoiceData;
   logoUrl: string | null;
   themeClasses: ThemeClasses;
+  editable?: boolean;
+  onDataChange?: (data: InvoiceData) => void;
 }
 
-const TemplateClassic: React.FC<TemplateProps> = ({ data, logoUrl, themeClasses }) => {
+/**
+ * CLASSIC TEMPLATE - Traditional bordered formal style
+ * Matches the PDF design with bordered sections and classic layout
+ */
+const TemplateClassic: React.FC<TemplateProps> = ({
+  data,
+  logoUrl,
+  themeClasses,
+  editable = false,
+  onDataChange,
+}) => {
+  const accentColor = themeClasses?.accentColor || "#374151";
+
+  // Update handlers
+  const updateData = (updates: Partial<InvoiceData>) => {
+    if (onDataChange) onDataChange({ ...data, ...updates });
+  };
+
+  const updateFrom = (field: string, value: string) => {
+    if (onDataChange) onDataChange({ ...data, from: { ...data.from, [field]: value } });
+  };
+
+  const updateTo = (field: string, value: string) => {
+    if (onDataChange) onDataChange({ ...data, to: { ...data.to, [field]: value } });
+  };
+
+  const updateItem = (index: number, field: string, value: string | number) => {
+    if (onDataChange) {
+      const newItems = data.items.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      );
+      const subtotal = newItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      const taxRateNum = parseFloat(data.taxRate) || 0;
+      const tax = subtotal * (taxRateNum / 100);
+      const total = subtotal + tax;
+      onDataChange({ ...data, items: newItems, subtotal, tax, total });
+    }
+  };
+
+  const addItem = () => {
+    if (onDataChange) {
+      const newItems = [...data.items, { description: "New Item", quantity: 1, price: 0 }];
+      onDataChange({ ...data, items: newItems });
+    }
+  };
+
+  const removeItem = (index: number) => {
+    if (onDataChange && data.items.length > 1) {
+      const newItems = data.items.filter((_, i) => i !== index);
+      const subtotal = newItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      const taxRateNum = parseFloat(data.taxRate) || 0;
+      const tax = subtotal * (taxRateNum / 100);
+      const total = subtotal + tax;
+      onDataChange({ ...data, items: newItems, subtotal, tax, total });
+    }
+  };
+
   return (
-    <div className="p-10 bg-white dark:bg-gray-900 text-black dark:text-white">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-10">
+    <div className="p-10 bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* TOP BORDER */}
+      <div className="h-1 mb-4" style={{ backgroundColor: accentColor }}></div>
+
+      {/* HEADER */}
+      <div className="flex justify-between items-start mb-6">
+        {/* Company Info */}
         <div>
-          {logoUrl ? (
-            <img src={logoUrl} alt="Company Logo" className="h-12 w-auto mb-4" />
-          ) : (
-            <h1 className={`text-4xl font-bold uppercase ${themeClasses.primary}`}>{data.from.name}</h1>
-          )}
-          <p className="text-sm text-gray-500">{data.from.address}</p>
-          <p className="text-sm text-gray-500">{data.from.email}</p>
+          <h1 className="text-2xl font-bold mb-1" style={{ color: "#1F2937" }}>
+            <EditableText
+              value={data.from.name}
+              onChange={(v) => updateFrom("name", v)}
+              editable={editable}
+              placeholder="Company Name"
+            />
+          </h1>
+          <p className="text-sm text-gray-500">
+            <EditableText
+              value={data.from.address}
+              onChange={(v) => updateFrom("address", v)}
+              editable={editable}
+              placeholder="Address"
+            />
+          </p>
+          <p className="text-sm text-gray-500">
+            <EditableText
+              value={data.from.email || ""}
+              onChange={(v) => updateFrom("email", v)}
+              editable={editable}
+              placeholder="Email"
+            />
+          </p>
         </div>
-        <div className="text-right">
-          <h2 className="text-2xl font-semibold uppercase text-gray-400 dark:text-gray-500">Invoice</h2>
-          <p className="text-md font-medium">{data.invoiceNumber}</p>
-          <p className="text-sm text-gray-500 mt-2">Date: {data.invoiceDate}</p>
-          <p className="text-sm text-gray-500">Due Date: {data.dueDate}</p>
+
+        {/* Invoice Box */}
+        <div className="border-2 p-4 text-center" style={{ borderColor: accentColor }}>
+          <h2 className="text-xl font-bold mb-1" style={{ color: accentColor }}>INVOICE</h2>
+          <p className="text-sm text-gray-700">
+            No: <EditableText
+              value={String(data.invoiceNumber).padStart(5, "0")}
+              onChange={(v) => updateData({ invoiceNumber: v })}
+              editable={editable}
+            />
+          </p>
         </div>
       </div>
 
-      {/* Bill To */}
-      <div className="mb-10">
-        <h3 className="text-sm font-semibold uppercase text-gray-400 dark:text-gray-500 mb-2">Bill To</h3>
-        <p className="text-lg font-bold text-foreground">{data.to.name}</p>
-        <p className="text-sm text-gray-600 dark:text-gray-300">{data.to.address}</p>
-      </div>
+      {/* DATES & BILL TO */}
+      <div className="flex gap-6 mb-6">
+        {/* Bill To Box */}
+        <div className="border-2 p-4 flex-1" style={{ borderColor: accentColor }}>
+          <p className="text-xs font-bold mb-2" style={{ color: accentColor }}>BILL TO:</p>
+          <p className="font-bold">
+            <EditableText
+              value={data.to.name}
+              onChange={(v) => updateTo("name", v)}
+              editable={editable}
+              placeholder="Client Name"
+            />
+          </p>
+          <p className="text-sm text-gray-500">
+            <EditableText
+              value={data.to.address}
+              onChange={(v) => updateTo("address", v)}
+              editable={editable}
+              placeholder="Client Address"
+            />
+          </p>
+        </div>
 
-      {/* Items Table */}
-      <table className="w-full mb-10">
-        {/* <thead className="bg-gray-100 dark:bg-gray-800"> */}
-          <thead className={`${themeClasses.bgAccent}`}> {/* bgAccent use kiya */}
-          <tr>
-            <th className="text-left p-3 text-sm font-semibold uppercase">Description</th>
-            <th className="text-center p-3 text-sm font-semibold uppercase">Qty</th>
-            <th className="text-right p-3 text-sm font-semibold uppercase">Price</th>
-            <th className="text-right p-3 text-sm font-semibold uppercase">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.items.map((item, index) => (
-            <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-              <td className="p-3">{item.description}</td>
-              <td className="text-center p-3">{item.quantity}</td>
-              <td className="text-right p-3">₹{item.price.toFixed(2)}</td>
-              <td className="text-right p-3">₹{(item.quantity * item.price).toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Totals */}
-      <div className="flex justify-end mb-10">
-        <div className="w-full max-w-xs space-y-2">
-            <div className="flex justify-between text-sm">
-                <span>Subtotal</span>
-                <span>₹{data.subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-                <span>GST (18%)</span>
-                <span>₹{data.tax.toFixed(2)}</span>
-            </div>
-            <div className={`flex justify-between text-xl font-bold pt-2 border-t ${themeClasses.primary}`}>
-                <span>Total</span>
-                <span>₹{data.total.toFixed(2)}</span>
-            </div>
+        {/* Dates */}
+        <div className="text-sm text-right">
+          <p className="text-gray-500">Invoice Date:</p>
+          <p className="font-medium mb-2">
+            <EditableText
+              value={data.invoiceDate}
+              onChange={(v) => updateData({ invoiceDate: v })}
+              editable={editable}
+            />
+          </p>
+          <p className="text-gray-500">Due Date:</p>
+          <p className="font-medium">
+            <EditableText
+              value={data.dueDate}
+              onChange={(v) => updateData({ dueDate: v })}
+              editable={editable}
+            />
+          </p>
         </div>
       </div>
-      
-      {/* Notes */}
-      <div>
-        <h4 className="font-semibold mb-2">Notes</h4>
-        <p className="text-xs text-gray-500">{data.notes}</p>
+
+      {/* TABLE */}
+      <div className="border" style={{ borderColor: accentColor }}>
+        {/* Table Header */}
+        <div
+          className="grid grid-cols-12 py-2 px-4 font-bold text-sm border-b"
+          style={{ backgroundColor: "#F3F4F6", borderColor: accentColor, color: accentColor }}
+        >
+          <div className="col-span-5">Description</div>
+          <div className="col-span-2 text-center">Qty</div>
+          <div className="col-span-2 text-right">Rate</div>
+          <div className="col-span-2 text-right">Amount</div>
+          {editable && <div className="col-span-1"></div>}
+        </div>
+
+        {/* Table Rows */}
+        {data.items.map((item, index) => (
+          <div
+            key={index}
+            className="grid grid-cols-12 py-3 px-4 items-center border-b border-gray-200 group hover:bg-gray-50"
+          >
+            <div className="col-span-5">
+              <EditableText
+                value={item.description}
+                onChange={(v) => updateItem(index, "description", v)}
+                editable={editable}
+                placeholder="Item description"
+              />
+            </div>
+            <div className="col-span-2 text-center text-gray-600">
+              <EditableNumber
+                value={item.quantity}
+                onChange={(v) => updateItem(index, "quantity", v)}
+                editable={editable}
+              />
+            </div>
+            <div className="col-span-2 text-right text-gray-600">
+              ₹<EditableNumber
+                value={item.price}
+                onChange={(v) => updateItem(index, "price", v)}
+                editable={editable}
+              />
+            </div>
+            <div className="col-span-2 text-right font-medium">
+              ₹{(item.price * item.quantity).toFixed(2)}
+            </div>
+            {editable && (
+              <div className="col-span-1 text-right">
+                <button
+                  onClick={() => removeItem(index)}
+                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
+                  disabled={data.items.length <= 1}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* Add Item */}
+        {editable && (
+          <button
+            onClick={addItem}
+            className="w-full py-2 text-sm text-blue-600 hover:bg-blue-50"
+          >
+            + Add Item
+          </button>
+        )}
       </div>
+
+      {/* TOTALS BOX */}
+      <div className="flex justify-end mt-6">
+        <div className="border w-64" style={{ borderColor: accentColor }}>
+          <div className="flex justify-between px-4 py-2 text-sm">
+            <span className="text-gray-500">Subtotal:</span>
+            <span>₹{data.subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between px-4 py-2 text-sm border-t border-gray-200">
+            <span className="text-gray-500">Tax:</span>
+            <span>₹{data.tax.toFixed(2)}</span>
+          </div>
+          <div
+            className="flex justify-between px-4 py-3 font-bold"
+            style={{ backgroundColor: "#F3F4F6", color: accentColor }}
+          >
+            <span>TOTAL:</span>
+            <span>₹{data.total.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM BORDER */}
+      <div className="h-1 mt-8" style={{ backgroundColor: accentColor }}></div>
+
+      {/* FOOTER */}
+      <p className="text-center text-sm text-gray-500 mt-4">
+        Thank you for your business
+      </p>
     </div>
   );
 };

@@ -1,175 +1,319 @@
-import React, { useRef } from 'react';
-import { Download } from 'lucide-react';
+// import React from "react";
+// import { useInvoice } from "../contexts/InvoiceContext";
 
-// Common types ko import karein
-import type { InvoiceData, ThemeClasses } from './invoice-templates/types';
-// InvoiceData type ko export karein taaki baaki pages ise use kar sakein
-export type { InvoiceData };
+// // ------------------ Types ------------------
+// interface InvoiceItem {
+//   item: string;
+//   description: string;
+//   quantity: number;
+//   unit_price: number;
+// }
 
-// Saare template components ko import karein
-import TemplateClassic from './invoice-templates/TemplateClassic';
-import TemplateModern from './invoice-templates/TemplateModern';
-import TemplateMinimal from './invoice-templates/TemplateMinimal';
-import TemplateBhookhadBaba from './invoice-templates/TemplateBhookhadBaba';
+// interface Customer {
+//   name: string;
+//   address: string;
+//   city: string;
+// }
 
-// Mock Data (agar data prop null ho toh yeh fallback ki tarah kaam karega)
-const mockInvoiceData: InvoiceData = {
-  invoiceNumber: 'INV-DEMO-001',
-  invoiceDate: new Date().toLocaleDateString('en-CA'), // Format: YYYY-MM-DD
-  dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-CA'),
-  from: {
-    name: 'Your Company',
-    address: '123 Business Avenue, Metro City',
-    email: 'contact@yourcompany.com',
-  },
-  to: {
-    name: 'Client Name',
-    company: 'Client Company Inc.',
-    address: '456 Corporate Road, Their City',
-    email: 'client@example.com',
-  },
-  items: [
-    { description: 'Example Service or Product', quantity: 2, price: 50.00 },
-    { description: 'Another Item Description', quantity: 1, price: 75.50 },
-  ],
-  subtotal: 175.50,
-  tax: 31.59, // 18% tax
-  total: 207.09,
-  notes: 'This is a sample invoice. Your data will appear here. Thank you for your business!',
-};
+// interface InvoiceData {
+//   invoice_nr: number;
+//   date: string;
+//   taxRate: number;
+//   customer: Customer;
+//   items: InvoiceItem[];
+// }
 
-// --- YEH HAI FIX: Expanded Theme colors ka mapping ---
-const themes: Record<string, ThemeClasses> = {
-    // Basic Themes
-    default:  { primary: 'text-yellow-600 dark:text-yellow-400', bgAccent: 'bg-yellow-100 dark:bg-yellow-900/30', borderAccent: 'border-yellow-500' },
-    blue:     { primary: 'text-blue-600 dark:text-blue-400',     bgAccent: 'bg-blue-100 dark:bg-blue-900/30',     borderAccent: 'border-blue-500' },
-    green:    { primary: 'text-green-600 dark:text-green-400',   bgAccent: 'bg-green-100 dark:bg-green-900/30',   borderAccent: 'border-green-500' },
-    purple:   { primary: 'text-indigo-600 dark:text-indigo-400', bgAccent: 'bg-indigo-100 dark:bg-indigo-900/30', borderAccent: 'border-indigo-500' },
-    // Premium Themes
-    slate:    { primary: 'text-slate-600 dark:text-slate-400',   bgAccent: 'bg-slate-200 dark:bg-slate-700/50',   borderAccent: 'border-slate-500' },
-    ocean:    { primary: 'text-cyan-700 dark:text-cyan-400',     bgAccent: 'bg-cyan-100 dark:bg-cyan-900/40',     borderAccent: 'border-cyan-600' },
-    sunset:   { primary: 'text-orange-700 dark:text-orange-400', bgAccent: 'bg-orange-100 dark:bg-orange-900/30', borderAccent: 'border-orange-500' },
-    // Professional Themes
-    mint:     { primary: 'text-emerald-700 dark:text-emerald-400', bgAccent: 'bg-emerald-50 dark:bg-emerald-900/40', borderAccent: 'border-emerald-300' },
-    lavender: { primary: 'text-violet-700 dark:text-violet-400',   bgAccent: 'bg-violet-50 dark:bg-violet-900/40',   borderAccent: 'border-violet-300' },
-    blush:    { primary: 'text-rose-700 dark:text-rose-400',       bgAccent: 'bg-rose-50 dark:bg-rose-900/40',       borderAccent: 'border-rose-300' },
-    graphite: { primary: 'text-gray-800 dark:text-gray-300',       bgAccent: 'bg-gray-100 dark:bg-gray-800/60',     borderAccent: 'border-gray-400' },
-    // Curated Themes
-    seaside:  { primary: 'text-[#34656D] dark:text-[#a0d2db]',     bgAccent: 'bg-[#FAF8F1] dark:bg-[#34656D]/30',   borderAccent: 'border-[#FAEAB1]' },
-    vibrant:  { primary: 'text-[#FF7A30] dark:text-[#ff9a63]',     bgAccent: 'bg-[#E9E3DF] dark:bg-[#465C88]/30',   borderAccent: 'border-[#465C88]' },
-    pastel:   { primary: 'text-[#a36d64] dark:text-[#f0e4d3]',     bgAccent: 'bg-[#FAF7F3] dark:bg-[#D9A299]/30',   borderAccent: 'border-[#F0E4D3]' },
-    rose:     { primary: 'text-[#B9375D] dark:text-[#f8b4c7]',     bgAccent: 'bg-[#EEEEEE] dark:bg-[#B9375D]/20',   borderAccent: 'border-[#E7D3D3]' },
-    lime:     { primary: 'text-[#82b800] dark:text-[#d2ff4d]',     bgAccent: 'bg-[#FFFADC] dark:bg-[#A4DD00]/20',   borderAccent: 'border-[#A4DD00]' },
-};
+// type CalculatedItem = InvoiceItem & { total_price: number };
 
-// Props interface definition
+// interface CalculatedTotals {
+//   items: CalculatedItem[];
+//   subtotal: number;
+//   tax: number;
+//   total: number;
+// }
+
+// // ------------------ Calculator ------------------
+// function calculatePreviewTotals(invoiceData: InvoiceData): CalculatedTotals {
+//   let subtotal = 0;
+
+//   const items = invoiceData.items.map((item) => {
+//     const qty = Number(item.quantity) || 0;
+//     const price = Number(item.unit_price) || 0;
+//     const total_price = qty * price;
+//     subtotal += total_price;
+//     return { ...item, total_price };
+//   });
+
+//   const tax = subtotal * (Number(invoiceData.taxRate) || 0);
+//   const total = subtotal + tax;
+
+//   return { items, subtotal, tax, total };
+// }
+
+// // ------------------ UI Component ------------------
+// function InvoicePreview(): JSX.Element {
+//   const { invoiceData, theme } = useInvoice();
+
+//   const { items, subtotal, tax, total } = calculatePreviewTotals(invoiceData);
+
+//   return (
+//     <div className="w-full max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 border border-gray-200">
+//       {/* Header */}
+//       <header className="flex justify-between items-start border-b pb-6 mb-6">
+//         {/* Company Info */}
+//         <div>
+//           <h2 className="text-2xl font-bold text-gray-800">Your Company Inc.</h2>
+//           <p className="text-gray-600">123 Main Street</p>
+//           <p className="text-gray-600">City, State, 12345</p>
+//         </div>
+
+//         {/* Invoice Details */}
+//         <div className="text-right">
+//           <h1
+//             className="text-4xl font-extrabold tracking-wide"
+//             style={{ color: theme.accent }}
+//           >
+//             INVOICE
+//           </h1>
+
+//           <p className="mt-3 text-gray-700">
+//             <strong>Invoice #:</strong> {invoiceData.invoice_nr}
+//           </p>
+//           <p className="text-gray-700">
+//             <strong>Date:</strong> {invoiceData.date}
+//           </p>
+//           <p className="text-xl font-semibold mt-1" style={{ color: theme.primary }}>
+//             Balance Due: ${total.toFixed(2)}
+//           </p>
+//         </div>
+//       </header>
+
+//       {/* Customer Info */}
+//       <section className="mb-6">
+//         <h3 className="font-semibold text-lg mb-1 text-gray-700">Bill To:</h3>
+//         <div className="bg-gray-50 p-4 rounded-xl border">
+//           <p className="text-gray-800 font-medium">{invoiceData.customer.name}</p>
+//           <p className="text-gray-600">{invoiceData.customer.address}</p>
+//           <p className="text-gray-600">{invoiceData.customer.city}</p>
+//         </div>
+//       </section>
+
+//       {/* Items Table */}
+//       <section>
+//         <table className="w-full border rounded-xl overflow-hidden">
+//           <thead>
+//             <tr
+//               className="text-left text-white"
+//               style={{ backgroundColor: theme.accent }}
+//             >
+//               <th className="p-3">Item</th>
+//               <th className="p-3">Qty</th>
+//               <th className="p-3">Price</th>
+//               <th className="p-3">Total</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {items.map((item, index) => (
+//               <tr
+//                 key={index}
+//                 className="border-b last:border-none hover:bg-gray-50 transition"
+//               >
+//                 <td className="p-3 font-medium text-gray-800">{item.item}</td>
+//                 <td className="p-3 text-gray-700">{item.quantity}</td>
+//                 <td className="p-3 text-gray-700">
+//                   ${item.unit_price.toFixed(2)}
+//                 </td>
+//                 <td className="p-3 text-gray-800 font-semibold">
+//                   ${item.total_price.toFixed(2)}
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//       </section>
+
+//       {/* Totals Section */}
+//       <footer className="mt-8 flex justify-end">
+//         <div className="w-64 bg-gray-50 border rounded-xl p-5 shadow-sm space-y-2">
+//           <div className="flex justify-between text-gray-700">
+//             <span>Subtotal:</span>
+//             <span>${subtotal.toFixed(2)}</span>
+//           </div>
+
+//           <div className="flex justify-between text-gray-700">
+//             <span>Tax ({invoiceData.taxRate * 100}%):</span>
+//             <span>${tax.toFixed(2)}</span>
+//           </div>
+
+//           <hr />
+
+//           <div className="flex justify-between text-xl font-bold">
+//             <span>Total:</span>
+//             <span style={{ color: theme.accent }}>${total.toFixed(2)}</span>
+//           </div>
+//         </div>
+//       </footer>
+
+//       {/* Footer Note */}
+//       <p className="text-center mt-6 text-gray-500 text-sm">
+//         Thank you for your business.
+//       </p>
+//     </div>
+//   );
+// }
+
+// export default InvoicePreview;
+
+import React from "react";
+import { useInvoice } from "@/contexts/InvoiceContext";
+
+import TemplateClassic from "@/components/invoice-templates/TemplateClassic";
+import TemplateMinimal from "@/components/invoice-templates/TemplateMinimal";
+import TemplateModern from "@/components/invoice-templates/TemplateModern";
+import TemplateProfessional from "@/components/invoice-templates/TemplateProfessional";
+import TemplateExecutive from "@/components/invoice-templates/TemplateExecutive";
+import TemplateCreative from "@/components/invoice-templates/TemplateCreative";
+
 interface InvoicePreviewProps {
-  data: InvoiceData | null;
-  logoUrl: string | null;
-  theme: string;
-  template: string;
-  setData?: React.Dispatch<React.SetStateAction<InvoiceData | null>>;
+  templateId?: string;
 }
 
-// Helper function to load scripts dynamically
-declare global {
-  interface Window { jspdf: any; html2canvas: any; }
-}
-const loadScript = (src: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) return resolve();
-    const script = document.createElement('script');
-    script.src = src;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-    document.body.appendChild(script);
-  });
-};
+function InvoicePreview({ templateId }: InvoicePreviewProps) {
+  const { invoiceData, template, theme } = useInvoice();
 
-// Main Invoice Preview Component
-const InvoicePreview: React.FC<InvoicePreviewProps> = ({ data, logoUrl, theme, template, setData }) => {
-  const invoiceRef = useRef<HTMLDivElement>(null);
-  const invoiceDataToRender = data || mockInvoiceData;
-  const themeClasses = themes[theme] || themes.default;
+  // Use prop templateId if provided, otherwise use context template
+  const activeTemplate = templateId || template;
 
-  const handleDownloadPDF = async () => {
-    const elementToCapture = invoiceRef.current?.querySelector('[data-template-content]');
-    if (!elementToCapture) return console.error("Could not find template content.");
+  // Convert your context invoice structure → template structure
+  const transformedData = {
+    from: {
+      name: "Your Company",
+      address: "Company Address",
+      email: "company@email.com"
+    },
 
-    try {
-        await Promise.all([
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
-        ]);
-    } catch (error) {
-        console.error("Could not load PDF libraries", error);
-        alert("Error downloading PDF. Check connection.");
-        return;
-    }
+    to: {
+      name: invoiceData.customer.name,
+      address: invoiceData.customer.address
+    },
 
-    const { jsPDF } = window.jspdf;
-    const html2canvas = window.html2canvas;
+    invoiceNumber: invoiceData.invoice_nr,
+    invoiceDate: invoiceData.date,
+    dueDate: invoiceData.date, // you can add due date later
 
-    const canvas = await html2canvas(elementToCapture as HTMLElement, { scale: 2, useCORS: true });
-    const imgData = canvas.toDataURL('image/png', 1.0);
+    items: invoiceData.items.map((item) => ({
+      description: item.description || item.item,
+      quantity: item.quantity,
+      price: item.unit_price,
+    })),
 
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = canvas.width / (96 / 25.4);
-    const imgHeight = canvas.height / (96 / 25.4);
-    const ratio = imgWidth / imgHeight;
-    let finalImgWidth = pdfWidth;
-    let finalImgHeight = pdfWidth / ratio;
+    subtotal: invoiceData.items.reduce(
+      (sum, item) => sum + item.quantity * item.unit_price,
+      0
+    ),
 
-    if (finalImgHeight > pdfHeight) {
-        finalImgHeight = pdfHeight;
-        finalImgWidth = pdfHeight * ratio;
-    }
+    taxRate: invoiceData.taxRate,
 
-    const xPos = (pdfWidth - finalImgWidth) / 2;
-    pdf.addImage(imgData, 'PNG', xPos, 0, finalImgWidth, finalImgHeight);
-    pdf.save(`invoice-${invoiceDataToRender.invoiceNumber}.pdf`);
+    tax:
+      invoiceData.items.reduce(
+        (sum, item) => sum + item.quantity * item.unit_price,
+        0
+      ) * invoiceData.taxRate,
+
+    total:
+      invoiceData.items.reduce(
+        (sum, item) => sum + item.quantity * item.unit_price,
+        0
+      ) *
+      (1 + invoiceData.taxRate),
+
+    notes: "Thank you for your business."
   };
 
-  // Function to render the correct template component
+  // Convert theme → themeClasses
+  const themeClasses = {
+    accentColor: theme.accent,
+    primary: theme.primary,
+    secondary: theme.secondary,
+    borderAccent: theme.accent,
+    bgAccent: theme.accent + "20",
+  };
+
+  const logoUrl = null;
+
   const renderTemplate = () => {
-    // BhookhadBaba template is special and manages its own state
-    if (template.toLowerCase() === 'bhookhad-baba') {
-      return <TemplateBhookhadBaba logoUrl={logoUrl} setData={setData} />;
-    }
-    // All other templates are display-only and receive standard props
-    const props = { data: invoiceDataToRender, logoUrl, themeClasses };
-    switch (template.toLowerCase()) {
-      case 'modern':
-        return <TemplateModern {...props} />;
-      case 'minimal':
-        return <TemplateMinimal {...props} />;
-      case 'classic':
+    switch (activeTemplate) {
+      case "classic":
+        return (
+          <TemplateClassic
+            data={transformedData}
+            logoUrl={logoUrl}
+            themeClasses={themeClasses}
+          />
+        );
+
+      case "minimal":
+        return (
+          <TemplateMinimal
+            data={transformedData}
+            logoUrl={logoUrl}
+            themeClasses={themeClasses}
+          />
+        );
+
+      case "modern":
+        return (
+          <TemplateModern
+            data={transformedData}
+            logoUrl={logoUrl}
+            themeClasses={themeClasses}
+          />
+        );
+
+      case "professional":
+        return (
+          <TemplateProfessional
+            data={transformedData}
+            logoUrl={logoUrl}
+            themeClasses={themeClasses}
+          />
+        );
+
+      case "executive":
+        return (
+          <TemplateExecutive
+            data={transformedData}
+            logoUrl={logoUrl}
+            themeClasses={themeClasses}
+          />
+        );
+
+      case "creative":
+        return (
+          <TemplateCreative
+            data={transformedData}
+            logoUrl={logoUrl}
+            themeClasses={themeClasses}
+          />
+        );
+
       default:
-        return <TemplateClassic {...props} />;
+        return (
+          <div className="w-full text-center text-gray-600 py-20">
+            Please select a template.
+          </div>
+        );
     }
   };
 
   return (
-    <div>
-      <div ref={invoiceRef} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden max-w-4xl mx-auto shadow-lg bg-white dark:bg-gray-900">
-           <div data-template-content>
-                {renderTemplate()}
-           </div>
-      </div>
-
-      <div className="text-center mt-8 mb-4">
-        <button
-          onClick={handleDownloadPDF}
-          className="bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center mx-auto shadow-md"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Download PDF
-        </button>
+    <div className="w-full p-8 flex justify-center bg-gray-100 overflow-auto">
+      <div className="max-w-4xl w-full bg-white shadow-xl rounded-xl p-0">
+        {renderTemplate()}
       </div>
     </div>
   );
-};
+}
 
 export default InvoicePreview;

@@ -84,10 +84,11 @@ export const DynamicNavigation = ({
 
   useEffect(() => {
     updateHighlightPosition();
-    window.addEventListener("resize", updateHighlightPosition);
-    return () => window.removeEventListener("resize", updateHighlightPosition);
+    const handleResize = () => updateHighlightPosition();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [active, links]);
-  
+
   useEffect(() => {
     if (activeLink && activeLink !== active) {
       setActive(activeLink);
@@ -155,6 +156,7 @@ export const DynamicNavigation = ({
 
       <style dangerouslySetInnerHTML={{ __html: `@keyframes ripple { to { transform: scale(4); opacity: 0; } } .animate-ripple { animation: ripple 0.6s linear; }` }} />
     </nav>
+
   );
 };
 

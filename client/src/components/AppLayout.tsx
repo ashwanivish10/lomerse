@@ -34,7 +34,7 @@ import fileIcon from "@/attached_assets/file.png"; // Mobile menu logo
 // --- Navigation Items (Define them once here) ---
 const mainMenuItems = [
   { href: "/", label: "Dashboard", icon: <LayoutDashboard className="size-5" /> },
-  { href: "/choose-template", label: "Create Invoice", icon: <FileText className="size-5" /> },
+  { href: "/create-invoice", label: "Create Invoice", icon: <FileText className="size-5" /> },
   { href: "/clients", label: "Clients", icon: <Users className="size-5" /> },
   { href: "/profile", label: "Profile", icon: <User className="size-5" /> },
   { href: "/reports", label: "Reports", icon: <BarChart3 className="size-5" /> },
@@ -93,10 +93,10 @@ export default function AppLayout({ children, pageHeader }: AppLayoutProps) {
     href: "/auth/logout", label: "Sign Out", icon: <LogOut className="size-5 text-red-500" />,
     onClick: () => { window.location.href = "/auth/logout"; },
   };
-  
+
   const getDockItems = (): DockItemData[] => [
-    ...mainMenuItems.map(item => ({...item, onClick: () => setLocation(item.href)})),
-    ...footerMenuItems.map(item => ({...item, onClick: () => setLocation(item.href)})),
+    ...mainMenuItems.map(item => ({ ...item, onClick: () => setLocation(item.href) })),
+    ...footerMenuItems.map(item => ({ ...item, onClick: () => setLocation(item.href) })),
     proItem,
     logoutItem,
   ];
@@ -121,7 +121,7 @@ export default function AppLayout({ children, pageHeader }: AppLayoutProps) {
   // --- Render Layout ---
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0e0f12] text-foreground transition-colors">
-      
+
       {/* 1. Desktop-only Dock */}
       <div className="hidden md:block">
         <Dock items={dockItems} />
@@ -152,7 +152,7 @@ export default function AppLayout({ children, pageHeader }: AppLayoutProps) {
                     Lomerse
                   </h2>
                 </div>
-                
+
                 {/* Navigation Links */}
                 <nav className="flex-1 flex flex-col gap-1">
                   {renderMenuItems(mainMenuItems)}
@@ -162,7 +162,7 @@ export default function AppLayout({ children, pageHeader }: AppLayoutProps) {
                 <div className="mt-auto">
                   <Separator className="my-2" />
                   {renderMenuItems(footerMenuItems)}
-                  
+
                   <SheetClose asChild>
                     <Button
                       variant="ghost"
@@ -189,7 +189,7 @@ export default function AppLayout({ children, pageHeader }: AppLayoutProps) {
             </Sheet>
           </div>
         </header>
-        
+
         {/* 4. Page Content */}
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           {children}

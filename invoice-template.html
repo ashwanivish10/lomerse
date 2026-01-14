@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .company-details {
+            padding-left: 10px;
+        }
+        .company-details h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .invoice-details {
+            text-align: right;
+        }
+        .invoice-details h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .parties {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .billed-to {
+            padding-right: 20px;
+        }
+        .billed-from {
+            text-align: right;
+        }
+        .item-table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            border-collapse: collapse;
+        }
+        .item-table th {
+            background: #f4f4f4;
+            border-bottom: 2px solid #ddd;
+            padding: 8px;
+            font-weight: bold;
+        }
+        .item-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .item-table .total-row td {
+            border-bottom: none;
+            background: #f4f4f4;
+            font-weight: bold;
+        }
+        .item-table th:nth-child(2), .item-table td:nth-child(2) {
+            text-align: center;
+        }
+        .item-table th:nth-child(3), .item-table td:nth-child(3) {
+            text-align: right;
+        }
+        .totals {
+            margin-top: 20px;
+            text-align: right;
+            width: 100%;
+        }
+        .totals-table {
+            display: inline-block;
+            width: 300px;
+        }
+        .totals-table tr td {
+            padding: 5px 0;
+        }
+        .totals-table tr td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        .totals-table .grand-total td {
+            font-size: 20px;
+            font-weight: bold;
+            border-top: 2px solid #333;
+        }
+        .notes {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            <div class="company-details">
+                <h1>{{from.name}}</h1>
+                <div>{{from.address}}</div>
+                <div>{{from.email}}</div>
+            </div>
+            <div class="invoice-details">
+                <h2>{{invoiceNumber}}</h2>
+                <div>Date: {{invoiceDate}}</div>
+                <div>Due: {{dueDate}}</div>
+            </div>
+        </div>
+
+        <div class="parties">
+            <div class="billed-to">
+                <strong>Billed To:</strong><br />
+                {{to.name}}<br />
+                {{to.company}}<br />
+                {{to.address}}
+            </div>
+        </div>
+
+        <table class="item-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <td>{{this.description}}</td>
+                    <td style="text-align: center;">{{this.quantity}}</td>
+                    <td style="text-align: right;">${{this.price}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <table class="totals-table">
+                <tr>
+                    <td>Subtotal:</td>
+                    <td>${{subtotal}}</td>
+                </tr>
+                <tr>
+                    <td>Tax:</td>
+                    <td>${{tax}}</td>
+                </tr>
+                <tr class="grand-total">
+                    <td>Total:</td>
+                    <td>${{total}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="notes">
+            <strong>Notes:</strong>
+            <p>{{notes}}</p>
+        </div>
+    </div>
+</body>
+</html>

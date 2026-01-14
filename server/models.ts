@@ -56,7 +56,9 @@ const paymentSchema = new mongoose.Schema({
 });
 
 // Create and export models
-export const User = mongoose.model('User', userSchema);
+// export const User = mongoose.model('User', userSchema);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);
+
 export const Invoice = mongoose.model('Invoice', invoiceSchema);
 export const Payment = mongoose.model('Payment', paymentSchema);
 
