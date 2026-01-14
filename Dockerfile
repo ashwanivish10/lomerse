@@ -1,7 +1,7 @@
 # Use Node.js with Puppeteer dependencies
 FROM node:20-slim
 
-# Install dependencies for Puppeteer
+# Install dependencies for Puppeteer/Chromium
 RUN apt-get update && apt-get install -y \
     chromium \
     fonts-liberation \
@@ -31,11 +31,11 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 # Create app directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -43,7 +43,10 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Expose port
+# Remove devDependencies after build to reduce image size
+RUN npm prune --production
+
+# Expose port (Render uses 10000 by default)
 EXPOSE 10000
 
 # Start the server
