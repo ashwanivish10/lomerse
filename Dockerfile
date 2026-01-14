@@ -33,6 +33,7 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 # Copy package files first for better caching
+# Cache bust: 2026-01-14-v2
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies for build)
