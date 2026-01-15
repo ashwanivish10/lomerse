@@ -32,7 +32,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 WORKDIR /app
 
 # Copy package files first for better caching
-# Cache bust: 2026-01-15-v2-fix-vite-duplicate
+# Cache bust: 2026-01-15-v3-remove-vite-from-server
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies for build)

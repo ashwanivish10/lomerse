@@ -351,17 +351,12 @@ app.use((req, res, next) => {
   });
 
   // ==========================================
-  // 🧰 Vite Integration (Dev vs Prod)
+  // 🧰 Static File Serving (Production Only)
   // ==========================================
-  if (app.get("env") === "development") {
-    // In development, dynamically import and setup Vite
-    const { setupVite } = await import("./vite");
-    await setupVite(app, server);
-  } else {
-    // In production, `serveStatic` (from utils.ts) will add
-    // the `express.static` middleware and the catch-all route.
-    serveStatic(app);
-  }
+  // NOTE: In development, run with `npm run dev` which uses tsx directly
+  // and doesn't need this build. Vite dev server is handled separately.
+  // This bundled server.js is ONLY for production.
+  serveStatic(app);
 
   // ==========================================
   // 🚦 Start the Server
