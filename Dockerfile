@@ -24,19 +24,19 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables
+# Set environment variables for Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-ENV NODE_ENV=production
 
 # Create app directory
 WORKDIR /app
 
 # Copy package files first for better caching
-# Cache bust: 2026-01-14-v2
+# Cache bust: 2026-01-15-v1
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies for build)
+# NODE_ENV must NOT be production here, otherwise devDependencies are skipped
 RUN npm install
 
 # Copy source code
@@ -45,7 +45,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove devDependencies after build to reduce image size
+# Set production environment and prune devDependencies
+ENV NODE_ENV=production
 RUN npm prune --production
 
 # Expose port (Render uses 10000 by default)
