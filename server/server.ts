@@ -204,7 +204,7 @@ import invoiceRoutes from "./routes/invoiceRoutes";
 import authRoutes from "./routes/authRoutes";
 import apiRoutes from "./routes/apiRoutes";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { log, serveStatic } from "./utils";
 import { connectDB } from "./models";
 import "./config/passport-setup"; // Load passport config
 import MongoStore from "connect-mongo";
@@ -354,10 +354,11 @@ app.use((req, res, next) => {
   // 🧰 Vite Integration (Dev vs Prod)
   // ==========================================
   if (app.get("env") === "development") {
-    // In development, Vite handles all non-API routes.
+    // In development, dynamically import and setup Vite
+    const { setupVite } = await import("./vite");
     await setupVite(app, server);
   } else {
-    // In production, `serveStatic` (from vite.ts) will add
+    // In production, `serveStatic` (from utils.ts) will add
     // the `express.static` middleware and the catch-all route.
     serveStatic(app);
   }
