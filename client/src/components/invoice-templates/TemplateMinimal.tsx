@@ -63,9 +63,9 @@ const TemplateMinimal: React.FC<TemplateProps> = ({
   };
 
   return (
-    <div className="p-12 bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="p-4 sm:p-6 md:p-12 bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* HEADER */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0 mb-6">
         <h1 className="text-lg font-bold text-gray-900">
           <EditableText
             value={data.from.name}
@@ -81,7 +81,7 @@ const TemplateMinimal: React.FC<TemplateProps> = ({
       <div className="border-b border-gray-200 mb-8"></div>
 
       {/* INFO GRID */}
-      <div className="grid grid-cols-3 gap-8 mb-10 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-10 text-xs sm:text-sm">
         {/* From */}
         <div>
           <p className="text-xs text-gray-400 mb-1">From</p>
@@ -163,9 +163,9 @@ const TemplateMinimal: React.FC<TemplateProps> = ({
       </div>
 
       {/* TABLE */}
-      <div className="border-t-2 border-gray-900 mb-6">
+      <div className="border-t-2 border-gray-900 mb-6 overflow-x-auto">
         {/* Header */}
-        <div className="grid grid-cols-12 py-3 text-xs text-gray-400 uppercase tracking-wide border-b border-gray-200">
+        <div className="grid grid-cols-12 py-2 sm:py-3 px-1 sm:px-0 text-[10px] sm:text-xs text-gray-400 uppercase tracking-wide border-b border-gray-200 min-w-[300px]">
           <div className="col-span-5">Description</div>
           <div className="col-span-2 text-center">Qty</div>
           <div className="col-span-2 text-right">Rate</div>
@@ -177,7 +177,7 @@ const TemplateMinimal: React.FC<TemplateProps> = ({
         {data.items.map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-12 py-4 items-center border-b border-gray-100 group"
+            className="grid grid-cols-12 py-2 sm:py-4 px-1 sm:px-0 items-center border-b border-gray-100 group min-w-[300px] text-xs sm:text-sm"
           >
             <div className="col-span-5 font-medium">
               <EditableText
@@ -207,7 +207,7 @@ const TemplateMinimal: React.FC<TemplateProps> = ({
               <div className="col-span-1 text-right">
                 <button
                   onClick={() => removeItem(index)}
-                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
+                  className="opacity-100 sm:opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
                   disabled={data.items.length <= 1}
                 >
                   ✕
@@ -226,17 +226,17 @@ const TemplateMinimal: React.FC<TemplateProps> = ({
 
       {/* TOTALS */}
       <div className="flex justify-end">
-        <div className="w-64">
-          <div className="border-t border-gray-900 pt-4 space-y-2">
-            <div className="flex justify-between text-sm text-gray-500">
+        <div className="w-full sm:w-64">
+          <div className="border-t border-gray-900 pt-3 sm:pt-4 space-y-2">
+            <div className="flex justify-between text-xs sm:text-sm text-gray-500">
               <span>Subtotal</span>
               <span className="text-gray-900">₹{data.subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm text-gray-500">
+            <div className="flex justify-between text-xs sm:text-sm text-gray-500">
               <span>Tax</span>
               <span className="text-gray-900">₹{data.tax.toFixed(2)}</span>
             </div>
-            <div className="border-t-2 border-gray-900 pt-3 flex justify-between text-lg font-bold">
+            <div className="border-t-2 border-gray-900 pt-2 sm:pt-3 flex justify-between text-sm sm:text-lg font-bold">
               <span>Total</span>
               <span>₹{data.total.toFixed(2)}</span>
             </div>

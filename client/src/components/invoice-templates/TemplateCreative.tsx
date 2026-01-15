@@ -66,21 +66,21 @@ const TemplateCreative: React.FC<TemplateProps> = ({
 
     return (
         <div
-            className="p-8 text-gray-900 relative overflow-hidden"
+            className="p-4 sm:p-6 md:p-8 text-gray-900 relative overflow-hidden"
             style={{ fontFamily: "'Inter', sans-serif", backgroundColor: "#FDF2F8" }}
         >
             {/* Decorative Circles */}
             <div
-                className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-30"
+                className="absolute -top-8 -right-8 w-24 sm:w-32 h-24 sm:h-32 rounded-full opacity-30"
                 style={{ backgroundColor: "#FCE7F3" }}
             ></div>
             <div
-                className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full opacity-40"
+                className="absolute -bottom-8 -left-8 w-16 sm:w-24 h-16 sm:h-24 rounded-full opacity-40"
                 style={{ backgroundColor: "#FBCFE8" }}
             ></div>
 
             {/* HEADER */}
-            <div className="flex justify-between items-start mb-6 relative z-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 relative z-10">
                 <div>
                     <h1 className="text-2xl font-bold mb-1" style={{ color: accentColor }}>
                         <EditableText
@@ -117,7 +117,7 @@ const TemplateCreative: React.FC<TemplateProps> = ({
             </div>
 
             {/* INFO CARDS */}
-            <div className="grid grid-cols-3 gap-4 mb-6 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 relative z-10">
                 {/* Bill To Card */}
                 <div className="bg-white rounded-xl p-4 shadow-sm">
                     <p className="text-xs font-bold mb-2" style={{ color: accentColor }}>BILL TO</p>
@@ -181,10 +181,10 @@ const TemplateCreative: React.FC<TemplateProps> = ({
             </div>
 
             {/* TABLE */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6 relative z-10">
+            <div className="bg-white rounded-xl overflow-hidden shadow-sm mb-6 relative z-10 overflow-x-auto">
                 {/* Table Header */}
                 <div
-                    className="grid grid-cols-12 py-3 px-4 text-white text-sm font-bold"
+                    className="grid grid-cols-12 py-2 sm:py-3 px-2 sm:px-4 text-white text-[10px] sm:text-sm font-bold min-w-[300px]"
                     style={{ backgroundColor: accentColor }}
                 >
                     <div className="col-span-5">DESCRIPTION</div>
@@ -198,7 +198,7 @@ const TemplateCreative: React.FC<TemplateProps> = ({
                 {data.items.map((item, index) => (
                     <div
                         key={index}
-                        className="grid grid-cols-12 py-3 px-4 items-center border-b border-gray-100 group"
+                        className="grid grid-cols-12 py-2 sm:py-3 px-2 sm:px-4 items-center border-b border-gray-100 group min-w-[300px] text-xs sm:text-sm"
                     >
                         <div className="col-span-5 font-medium">
                             <EditableText
@@ -247,8 +247,8 @@ const TemplateCreative: React.FC<TemplateProps> = ({
 
             {/* TOTALS CARD */}
             <div className="flex justify-end relative z-10">
-                <div className="bg-white rounded-xl p-5 shadow-sm w-64">
-                    <div className="space-y-2 text-sm">
+                <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm w-full sm:w-64">
+                    <div className="space-y-2 text-xs sm:text-sm">
                         <div className="flex justify-between">
                             <span className="text-gray-500">Subtotal</span>
                             <span>₹{data.subtotal.toFixed(2)}</span>
@@ -259,7 +259,7 @@ const TemplateCreative: React.FC<TemplateProps> = ({
                         </div>
                     </div>
                     <div
-                        className="mt-4 py-3 px-4 rounded-lg text-white font-bold flex justify-between"
+                        className="mt-3 sm:mt-4 py-2 sm:py-3 px-3 sm:px-4 rounded-lg text-white font-bold text-sm sm:text-base flex justify-between"
                         style={{ backgroundColor: accentColor }}
                     >
                         <span>TOTAL</span>

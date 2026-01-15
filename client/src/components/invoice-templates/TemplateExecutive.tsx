@@ -68,9 +68,9 @@ const TemplateExecutive: React.FC<TemplateProps> = ({
     return (
         <div className="bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
             {/* DARK HEADER */}
-            <div className="py-6 px-8 text-white" style={{ backgroundColor: accentColor }}>
+            <div className="py-4 sm:py-6 px-4 sm:px-8 text-white" style={{ backgroundColor: accentColor }}>
                 <div className="h-1 mb-4" style={{ backgroundColor: goldColor }}></div>
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0">
                     <div>
                         <h1 className="text-2xl font-bold mb-2">
                             <EditableText
@@ -123,9 +123,9 @@ const TemplateExecutive: React.FC<TemplateProps> = ({
             {/* GOLD ACCENT LINE */}
             <div className="h-1" style={{ backgroundColor: goldColor }}></div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-6 md:p-8">
                 {/* INFO SECTION */}
-                <div className="flex justify-between mb-8">
+                <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6 sm:mb-8">
                     {/* Bill To */}
                     <div>
                         <p className="text-xs font-bold mb-2" style={{ color: goldColor }}>BILL TO</p>
@@ -159,9 +159,9 @@ const TemplateExecutive: React.FC<TemplateProps> = ({
                 </div>
 
                 {/* TABLE */}
-                <div className="border-t-2 mb-6" style={{ borderColor: accentColor }}>
+                <div className="border-t-2 mb-6 overflow-x-auto" style={{ borderColor: accentColor }}>
                     {/* Header */}
-                    <div className="grid grid-cols-12 py-3 text-xs uppercase tracking-wide" style={{ color: goldColor }}>
+                    <div className="grid grid-cols-12 py-2 sm:py-3 px-1 sm:px-0 text-[10px] sm:text-xs uppercase tracking-wide min-w-[300px]" style={{ color: goldColor }}>
                         <div className="col-span-5 font-bold">SERVICE / DESCRIPTION</div>
                         <div className="col-span-2 text-center font-bold">QTY</div>
                         <div className="col-span-2 text-right font-bold">RATE</div>
@@ -173,7 +173,7 @@ const TemplateExecutive: React.FC<TemplateProps> = ({
                     {data.items.map((item, index) => (
                         <div
                             key={index}
-                            className="grid grid-cols-12 py-4 items-center border-b border-gray-100 group"
+                            className="grid grid-cols-12 py-2 sm:py-4 px-1 sm:px-0 items-center border-b border-gray-100 group min-w-[300px] text-xs sm:text-sm"
                         >
                             <div className="col-span-5 font-medium">
                                 <EditableText
@@ -203,7 +203,7 @@ const TemplateExecutive: React.FC<TemplateProps> = ({
                                 <div className="col-span-1 text-right">
                                     <button
                                         onClick={() => removeItem(index)}
-                                        className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
+                                        className="opacity-100 sm:opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
                                         disabled={data.items.length <= 1}
                                     >
                                         ✕
@@ -222,17 +222,17 @@ const TemplateExecutive: React.FC<TemplateProps> = ({
 
                 {/* TOTALS */}
                 <div className="flex justify-end">
-                    <div className="w-64 space-y-2">
-                        <div className="flex justify-between text-sm">
+                    <div className="w-full sm:w-64 space-y-2">
+                        <div className="flex justify-between text-xs sm:text-sm">
                             <span className="text-gray-500">Subtotal</span>
                             <span>₹{data.subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-xs sm:text-sm">
                             <span className="text-gray-500">Tax ({(data.taxRate * 100).toFixed(0)}%)</span>
                             <span>₹{data.tax.toFixed(2)}</span>
                         </div>
                         <div className="border-t pt-2" style={{ borderColor: goldColor }}></div>
-                        <div className="flex justify-between text-lg font-bold">
+                        <div className="flex justify-between text-sm sm:text-lg font-bold">
                             <span style={{ color: accentColor }}>TOTAL DUE</span>
                             <span style={{ color: goldColor }}>₹{data.total.toFixed(2)}</span>
                         </div>

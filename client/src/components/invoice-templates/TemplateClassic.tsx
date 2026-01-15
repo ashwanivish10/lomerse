@@ -68,12 +68,12 @@ const TemplateClassic: React.FC<TemplateProps> = ({
   };
 
   return (
-    <div className="p-10 bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="p-4 sm:p-6 md:p-10 bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* TOP BORDER */}
       <div className="h-1 mb-4" style={{ backgroundColor: accentColor }}></div>
 
       {/* HEADER */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
         {/* Company Info */}
         <div>
           <h1 className="text-2xl font-bold mb-1" style={{ color: "#1F2937" }}>
@@ -116,11 +116,11 @@ const TemplateClassic: React.FC<TemplateProps> = ({
       </div>
 
       {/* DATES & BILL TO */}
-      <div className="flex gap-6 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6">
         {/* Bill To Box */}
-        <div className="border-2 p-4 flex-1" style={{ borderColor: accentColor }}>
+        <div className="border-2 p-3 sm:p-4 flex-1" style={{ borderColor: accentColor }}>
           <p className="text-xs font-bold mb-2" style={{ color: accentColor }}>BILL TO:</p>
-          <p className="font-bold">
+          <p className="font-bold text-sm sm:text-base">
             <EditableText
               value={data.to.name}
               onChange={(v) => updateTo("name", v)}
@@ -128,7 +128,7 @@ const TemplateClassic: React.FC<TemplateProps> = ({
               placeholder="Client Name"
             />
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             <EditableText
               value={data.to.address}
               onChange={(v) => updateTo("address", v)}
@@ -139,7 +139,7 @@ const TemplateClassic: React.FC<TemplateProps> = ({
         </div>
 
         {/* Dates */}
-        <div className="text-sm text-right">
+        <div className="text-xs sm:text-sm text-left sm:text-right">
           <p className="text-gray-500">Invoice Date:</p>
           <p className="font-medium mb-2">
             <EditableText
@@ -160,10 +160,10 @@ const TemplateClassic: React.FC<TemplateProps> = ({
       </div>
 
       {/* TABLE */}
-      <div className="border" style={{ borderColor: accentColor }}>
+      <div className="border overflow-x-auto" style={{ borderColor: accentColor }}>
         {/* Table Header */}
         <div
-          className="grid grid-cols-12 py-2 px-4 font-bold text-sm border-b"
+          className="grid grid-cols-12 py-2 px-2 sm:px-4 font-bold text-[10px] sm:text-sm border-b min-w-[300px]"
           style={{ backgroundColor: "#F3F4F6", borderColor: accentColor, color: accentColor }}
         >
           <div className="col-span-5">Description</div>
@@ -177,7 +177,7 @@ const TemplateClassic: React.FC<TemplateProps> = ({
         {data.items.map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-12 py-3 px-4 items-center border-b border-gray-200 group hover:bg-gray-50"
+            className="grid grid-cols-12 py-2 sm:py-3 px-2 sm:px-4 items-center border-b border-gray-200 group hover:bg-gray-50 min-w-[300px] text-xs sm:text-sm"
           >
             <div className="col-span-5">
               <EditableText
@@ -208,7 +208,7 @@ const TemplateClassic: React.FC<TemplateProps> = ({
               <div className="col-span-1 text-right">
                 <button
                   onClick={() => removeItem(index)}
-                  className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
+                  className="opacity-100 sm:opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
                   disabled={data.items.length <= 1}
                 >
                   ✕
@@ -230,18 +230,18 @@ const TemplateClassic: React.FC<TemplateProps> = ({
       </div>
 
       {/* TOTALS BOX */}
-      <div className="flex justify-end mt-6">
-        <div className="border w-64" style={{ borderColor: accentColor }}>
-          <div className="flex justify-between px-4 py-2 text-sm">
+      <div className="flex justify-end mt-4 sm:mt-6">
+        <div className="border w-full sm:w-64" style={{ borderColor: accentColor }}>
+          <div className="flex justify-between px-3 sm:px-4 py-2 text-xs sm:text-sm">
             <span className="text-gray-500">Subtotal:</span>
             <span>₹{data.subtotal.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between px-4 py-2 text-sm border-t border-gray-200">
+          <div className="flex justify-between px-3 sm:px-4 py-2 text-xs sm:text-sm border-t border-gray-200">
             <span className="text-gray-500">Tax:</span>
             <span>₹{data.tax.toFixed(2)}</span>
           </div>
           <div
-            className="flex justify-between px-4 py-3 font-bold"
+            className="flex justify-between px-3 sm:px-4 py-2 sm:py-3 font-bold text-sm sm:text-base"
             style={{ backgroundColor: "#F3F4F6", color: accentColor }}
           >
             <span>TOTAL:</span>

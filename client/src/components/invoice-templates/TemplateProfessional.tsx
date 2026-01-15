@@ -67,8 +67,8 @@ const TemplateProfessional: React.FC<TemplateProps> = ({
     return (
         <div className="bg-white text-gray-900" style={{ fontFamily: "'Inter', sans-serif" }}>
             {/* TOP HEADER BAR */}
-            <div className="py-6 px-8 text-white" style={{ backgroundColor: accentColor }}>
-                <div className="flex justify-between items-center">
+            <div className="py-4 sm:py-6 px-4 sm:px-8 text-white" style={{ backgroundColor: accentColor }}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <div>
                         <h1 className="text-2xl font-bold">
                             <EditableText
@@ -103,9 +103,9 @@ const TemplateProfessional: React.FC<TemplateProps> = ({
                 </div>
             </div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-6 md:p-8">
                 {/* INFO BOXES */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 sm:mb-8">
                     {/* Bill To */}
                     <div className="bg-gray-50 p-4 rounded">
                         <p className="text-xs font-bold mb-2" style={{ color: accentColor }}>BILL TO</p>
@@ -160,10 +160,10 @@ const TemplateProfessional: React.FC<TemplateProps> = ({
                 </div>
 
                 {/* TABLE */}
-                <div className="rounded overflow-hidden border border-gray-200">
+                <div className="rounded overflow-hidden border border-gray-200 overflow-x-auto">
                     {/* Table Header */}
                     <div
-                        className="grid grid-cols-12 py-3 px-4 text-white text-sm font-bold"
+                        className="grid grid-cols-12 py-2 sm:py-3 px-2 sm:px-4 text-white text-[10px] sm:text-sm font-bold min-w-[300px]"
                         style={{ backgroundColor: accentColor }}
                     >
                         <div className="col-span-5">DESCRIPTION</div>
@@ -177,7 +177,7 @@ const TemplateProfessional: React.FC<TemplateProps> = ({
                     {data.items.map((item, index) => (
                         <div
                             key={index}
-                            className={`grid grid-cols-12 py-3 px-4 items-center group ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
+                            className={`grid grid-cols-12 py-2 sm:py-3 px-2 sm:px-4 items-center group min-w-[300px] text-xs sm:text-sm ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
                         >
                             <div className="col-span-5 font-medium">
                                 <EditableText
@@ -208,7 +208,7 @@ const TemplateProfessional: React.FC<TemplateProps> = ({
                                 <div className="col-span-1 text-right">
                                     <button
                                         onClick={() => removeItem(index)}
-                                        className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
+                                        className="opacity-100 sm:opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1"
                                         disabled={data.items.length <= 1}
                                     >
                                         ✕
@@ -229,18 +229,18 @@ const TemplateProfessional: React.FC<TemplateProps> = ({
                 </div>
 
                 {/* TOTALS */}
-                <div className="flex justify-end mt-6">
-                    <div className="w-64 space-y-2">
-                        <div className="flex justify-between text-sm">
+                <div className="flex justify-end mt-4 sm:mt-6">
+                    <div className="w-full sm:w-64 space-y-2">
+                        <div className="flex justify-between text-xs sm:text-sm">
                             <span className="text-gray-500">Subtotal</span>
                             <span>₹{data.subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-xs sm:text-sm">
                             <span className="text-gray-500">Tax ({(data.taxRate * 100).toFixed(0)}%)</span>
                             <span>₹{data.tax.toFixed(2)}</span>
                         </div>
                         <div
-                            className="flex justify-between font-bold text-white px-4 py-3 rounded"
+                            className="flex justify-between font-bold text-white text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 rounded"
                             style={{ backgroundColor: accentColor }}
                         >
                             <span>TOTAL DUE</span>
