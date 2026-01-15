@@ -122,10 +122,30 @@ export function generate(
     // --- ITEMS ---
     let y = tableTop + 32;
 
+    // Helper function to draw table header on new pages
+    const drawTableHeader = (yPos: number) => {
+        doc
+            .strokeColor(colors.primary)
+            .lineWidth(2)
+            .moveTo(50, yPos + 18)
+            .lineTo(550, yPos + 18)
+            .stroke();
+
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(8)
+            .fillColor(colors.secondary)
+            .text("DESCRIPTION", 50, yPos)
+            .text("QTY", 340, yPos, { width: 50, align: "center" })
+            .text("RATE", 400, yPos, { width: 70, align: "right" })
+            .text("AMOUNT", 480, yPos, { width: 70, align: "right" });
+        return yPos + 32;
+    };
+
     invoice.items.forEach((item: any) => {
         if (y + rowHeight > pageBottom) {
             doc.addPage();
-            y = 50;
+            y = drawTableHeader(50);
         }
 
         const lineTotal = item.quantity * item.price;

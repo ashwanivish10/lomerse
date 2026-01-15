@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   const PLAN_PRICES = {
-    single: 1900,  // ₹19 in paise
+    single: 200,  // ₹2 in paise (New Year Offer)
     monthly: 39900, // ₹399 in paise
     yearly: 399900, // ₹3999 in paise
   };

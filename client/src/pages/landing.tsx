@@ -58,7 +58,8 @@ export default function Landing() {
   const pricingTiers = [
     {
       name: "Pay Per Invoice",
-      price: "₹19",
+      price: "₹2",
+      originalPrice: "₹19",
       period: "per invoice",
       description: "Perfect for occasional invoicing",
       features: [
@@ -70,6 +71,7 @@ export default function Landing() {
       cta: "Get Started",
       variant: "outline" as const,
       popular: false,
+      badge: "🎉 NEW YEAR OFFER",
     },
     {
       name: "Monthly Pro",
@@ -449,6 +451,11 @@ export default function Landing() {
                     <span className="text-4xl font-bold text-foreground">
                       {tier.price}
                     </span>
+                    {tier.originalPrice && (
+                      <span className="text-lg text-muted-foreground line-through">
+                        {tier.originalPrice}
+                      </span>
+                    )}
                     <span className="text-muted-foreground">
                       / {tier.period}
                     </span>

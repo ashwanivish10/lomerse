@@ -93,17 +93,33 @@ export function generate(
 
     // --- ITEMS ---
     let y = tableTop + 38;
+    let rowIndex = 0;
+
+    // Helper function to draw table header
+    const drawTableHeader = (yPos: number) => {
+        doc.rect(50, yPos, 500, 28).fill(colors.accent);
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(9)
+            .fillColor("#ffffff")
+            .text("DESCRIPTION", 60, yPos + 9)
+            .text("QTY", 340, yPos + 9, { width: 50, align: "center" })
+            .text("RATE", 400, yPos + 9, { width: 70, align: "right" })
+            .text("AMOUNT", 480, yPos + 9, { width: 70, align: "right" });
+        return yPos + 38;
+    };
 
     invoice.items.forEach((item: any, i: number) => {
         if (y + rowHeight > pageBottom) {
             doc.addPage();
-            y = 50;
+            y = drawTableHeader(50);
+            rowIndex = 0; // Reset for alternating colors on new page
         }
 
         const lineTotal = item.quantity * item.price;
 
         // Alternating row background
-        if (i % 2 === 0) {
+        if (rowIndex % 2 === 0) {
             doc.rect(50, y - 5, 500, rowHeight).fill("#F8FAFC");
         }
 
@@ -120,6 +136,7 @@ export function generate(
             .text(`${lineTotal.toFixed(2)}`, 480, y, { width: 70, align: "right" });
 
         y += rowHeight;
+        rowIndex++;
     });
 
     // --- TOTALS ---

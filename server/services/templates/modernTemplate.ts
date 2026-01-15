@@ -109,10 +109,26 @@ export function generate(
   // Table Items
   let y = tableTop + 38;
 
+  // Helper function to draw table header on new pages
+  const drawTableHeader = (yPos: number) => {
+    doc.rect(50, yPos, 500, 28).fill(colors.accent + "15");
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .fillColor(colors.accent)
+      .text("DESCRIPTION", 60, yPos + 9)
+      .text("QTY", 340, yPos + 9, { width: 50, align: "center" })
+      .text("RATE", 400, yPos + 9, { width: 70, align: "right" })
+      .text("AMOUNT", 480, yPos + 9, { width: 70, align: "right" });
+    return yPos + 38;
+  };
+
   invoice.items.forEach((item: any, i: number) => {
     if (y + rowHeight > pageBottom) {
       doc.addPage();
-      y = 50;
+      // Redraw sidebar on new page
+      doc.rect(0, 0, 8, pageHeight).fill(colors.accent);
+      y = drawTableHeader(50);
     }
 
     const lineTotal = item.quantity * item.price;

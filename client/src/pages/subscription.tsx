@@ -160,7 +160,9 @@ export default function Subscription() {
   const pricingPlans = [
     {
       name: "Pay Per Invoice",
-      price: "₹19",
+      price: "₹2",
+      originalPrice: "₹19",
+      savings: "Save ₹17",
       period: "per invoice",
       description: "Perfect for occasional invoicing",
       features: [
@@ -172,8 +174,9 @@ export default function Subscription() {
       planType: "single" as const,
       cta: "Get Started",
       icon: Receipt,
-      gradient: "from-slate-500 to-slate-700",
+      gradient: "from-emerald-500 to-teal-600",
       popular: false,
+      badge: "🎉 NEW YEAR OFFER",
     },
     {
       name: "Monthly Pro",

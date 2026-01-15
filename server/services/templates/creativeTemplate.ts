@@ -107,11 +107,7 @@ export function generate(
     // --- TABLE ---
     const tableTop = 210;
 
-    // Table Container
-    const tableHeight = 30 + (invoice.items.length * rowHeight) + 15;
-    doc.roundedRect(50, tableTop, 500, tableHeight, 10).fill("#ffffff");
-
-    // Table Header
+    // Table Header (rounded top only)
     doc.roundedRect(50, tableTop, 500, 30, 10).fill(colors.accent);
     doc.rect(50, tableTop + 15, 500, 15).fill(colors.accent); // Square bottom to blend
 
@@ -124,14 +120,24 @@ export function generate(
         .text("PRICE", 395, tableTop + 10, { width: 60, align: "right" })
         .text("TOTAL", 470, tableTop + 10, { width: 65, align: "right" });
 
-    // Table Items
+    // Table Items - draw white background per row
     let y = tableTop + 42;
 
-    invoice.items.forEach((item: any) => {
+    invoice.items.forEach((item: any, index: number) => {
         if (y + rowHeight > pageBottom - 120) {
             doc.addPage();
             doc.rect(0, 0, doc.page.width, doc.page.height).fill("#FDF2F8");
             y = 50;
+        }
+
+        // Draw white background for the row
+        const isLast = index === invoice.items.length - 1;
+        if (isLast) {
+            // Rounded bottom corners for last item
+            doc.roundedRect(50, y - 12, 500, rowHeight + 12, 10).fill("#ffffff");
+            doc.rect(50, y - 12, 500, rowHeight / 2).fill("#ffffff"); // Square top to blend
+        } else {
+            doc.rect(50, y - 12, 500, rowHeight).fill("#ffffff");
         }
 
         const lineTotal = item.quantity * item.price;

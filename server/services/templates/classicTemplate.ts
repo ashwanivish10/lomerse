@@ -114,10 +114,29 @@ export function generate(doc: PDFKit.PDFDocument, invoice: any, theme: any) {
   // Table rows
   let y = tableTop + 30;
 
+  // Helper function to draw table header
+  const drawTableHeader = (yPos: number) => {
+    doc
+      .strokeColor(colors.accent)
+      .lineWidth(1)
+      .rect(50, yPos, 500, 26)
+      .fillAndStroke("#F3F4F6", colors.accent);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .fillColor(colors.accent)
+      .text("Description", 60, yPos + 8)
+      .text("Qty", 330, yPos + 8, { width: 50, align: "center" })
+      .text("Rate", 390, yPos + 8, { width: 70, align: "right" })
+      .text("Amount", 470, yPos + 8, { width: 70, align: "right" });
+    return yPos + 30;
+  };
+
   invoice.items.forEach((item: any, i: number) => {
     if (y + rowHeight > pageBottom) {
       doc.addPage();
-      y = 50;
+      y = drawTableHeader(50);
     }
 
     const lineTotal = item.quantity * item.price;
